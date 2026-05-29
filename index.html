@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypoLearn — Touch Typing Tutor</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">typo<span>learn</span></div>
+    <nav>
+      <button class="active" onclick="showScreen('lessons',this)">Lessons</button>
+      <button onclick="showScreen('fingers',this)">Finger Placement</button>
+      <button onclick="showScreen('practice',this)">Practice</button>
+      <button onclick="showScreen('test',this)">Speed Test</button>
+      <button onclick="showScreen('progress',this)">Progress</button>
+    </nav>
+    <div class="xp-pill">⚡ <span id="total-xp">0</span> XP</div>
+  </header>
+
+  <main>
+
+    <!-- LESSONS -->
+    <div class="screen active" id="screen-lessons">
+      <div id="lesson-list">
+        <div class="section-label">Choose a lesson</div>
+        <div class="lesson-grid" id="lesson-grid"></div>
+      </div>
+      <div id="lesson-area">
+        <div class="lesson-header">
+          <div class="lesson-title-big" id="lesson-heading"></div>
+          <button class="close-btn" onclick="closeLesson()">✕ Close</button>
+        </div>
+        <div class="mode-tabs">
+          <button class="mode-tab active" onclick="setMode('learn',this)">Learn</button>
+          <button class="mode-tab" onclick="setMode('repeat',this)">Repeat</button>
+          <button class="mode-tab" onclick="setMode('words',this)">Words</button>
+        </div>
+
+        <!-- LEARN MODE -->
+        <div id="mode-learn">
+          <div class="progress-dots" id="learn-dots"></div>
+          <div class="learn-card" id="learn-card">
+            <h2 id="learn-key-title"></h2>
+            <p id="learn-instruction"></p>
+          </div>
+          <div class="keyboard-wrap">
+            <div class="kb" id="learn-kb"></div>
+          </div>
+        </div>
+
+        <!-- REPEAT MODE -->
+        <div id="mode-repeat" style="display:none">
+          <div class="repeat-boxes" id="repeat-boxes"></div>
+          <div class="type-area" style="margin-bottom:20px">
+            <div class="type-line">
+              <input class="type-input" id="repeat-input" placeholder="Press the highlighted key…" autocomplete="off"
+                autocorrect="off" spellcheck="false" maxlength="1">
+            </div>
+          </div>
+          <div class="keyboard-wrap">
+            <div class="kb" id="repeat-kb"></div>
+          </div>
+        </div>
+
+        <!-- WORDS MODE -->
+        <div id="mode-words" style="display:none">
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-val" id="w-wpm">0</div>
+              <div class="stat-lbl">WPM</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="w-acc">100%</div>
+              <div class="stat-lbl">Accuracy</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="w-combo">0</div>
+              <div class="stat-lbl">Combo</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="w-time">0s</div>
+              <div class="stat-lbl">Time</div>
+            </div>
+          </div>
+          <div class="words-display" id="words-display"></div>
+          <div class="type-area">
+            <div class="type-line">
+              <input class="type-input" id="words-input" placeholder="Start typing the words…" autocomplete="off"
+                autocorrect="off" spellcheck="false">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINGER PLACEMENT -->
+    <div class="screen" id="screen-fingers">
+      <div class="fp-intro">
+        <div class="fp-intro-icon">🖐️</div>
+        <div>
+          <h2>10-Finger Placement — QWERTY</h2>
+          <p>Each finger has its own place on the keyboard. This section will teach you the correct position and give
+            you practice.</p>
+        </div>
+      </div>
+
+      <!-- Step tabs -->
+      <div class="fp-steps">
+        <div class="fp-step active" id="fstep-0" onclick="fpSetStep(0)">
+          <div class="fp-step-dot" style="background:#fbbf24"></div> Overview
+        </div>
+        <div class="fp-step" id="fstep-1" onclick="fpSetStep(1)">
+          <div class="fp-step-dot fc-pinky"></div> Pinky fingers
+        </div>
+        <div class="fp-step" id="fstep-2" onclick="fpSetStep(2)">
+          <div class="fp-step-dot fc-ring"></div> Ring fingers
+        </div>
+        <div class="fp-step" id="fstep-3" onclick="fpSetStep(3)">
+          <div class="fp-step-dot fc-middle"></div> Middle fingers
+        </div>
+        <div class="fp-step" id="fstep-4" onclick="fpSetStep(4)">
+          <div class="fp-step-dot fc-index"></div> Index fingers
+        </div>
+        <div class="fp-step" id="fstep-5" onclick="fpSetStep(5)">
+          <div class="fp-step-dot fc-thumb"></div> Thumbs
+        </div>
+        <div class="fp-step" id="fstep-6" onclick="fpSetStep(6)">
+          <div class="fp-step-dot" style="background:var(--accent)"></div> Practice drill
+        </div>
+      </div>
+
+      <!-- Keyboard visual -->
+      <div class="fp-kb-wrap">
+        <div id="fp-keyboard"></div>
+      </div>
+
+      <!-- Legend -->
+      <div class="fp-legend" id="fp-legend">
+        <div class="fp-leg-item" onclick="fpClickLegend('L-pinky','R-pinky')">
+          <div class="fp-leg-dot fc-pinky"></div><span class="fp-leg-label">Pinky (L &amp; R)</span>
+        </div>
+        <div class="fp-leg-item" onclick="fpClickLegend('L-ring','R-ring')">
+          <div class="fp-leg-dot fc-ring"></div><span class="fp-leg-label">Ring (L &amp; R)</span>
+        </div>
+        <div class="fp-leg-item" onclick="fpClickLegend('L-middle','R-middle')">
+          <div class="fp-leg-dot fc-middle"></div><span class="fp-leg-label">Middle (L &amp; R)</span>
+        </div>
+        <div class="fp-leg-item" onclick="fpClickLegend('L-index','R-index')">
+          <div class="fp-leg-dot fc-index"></div><span class="fp-leg-label">Index (L &amp; R)</span>
+        </div>
+        <div class="fp-leg-item" onclick="fpClickLegend('thumb')">
+          <div class="fp-leg-dot fc-thumb"></div><span class="fp-leg-label">Thumbs (Space)</span>
+        </div>
+      </div>
+
+      <!-- Info card for current step -->
+      <div class="fp-practice-box" id="fp-info-box">
+        <h3 id="fp-info-title">All fingers together</h3>
+        <p id="fp-info-desc" style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px"></p>
+        <!-- Drill area (shown in practice step) -->
+        <div id="fp-drill-area" style="display:none">
+          <div class="fp-msg" id="fp-drill-msg"></div>
+          <div class="fp-drill-keys" id="fp-drill-keys"></div>
+          <div class="fp-progress-bar">
+            <div class="fp-progress-fill" id="fp-drill-prog"></div>
+          </div>
+          <input id="fp-drill-input" class="type-input"
+            style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;width:100%;margin-bottom:4px"
+            placeholder="Press the highlighted key…" autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="fp-nav-btns">
+          <button class="tb-btn" id="fp-prev-btn" onclick="fpPrev()">← Previous</button>
+          <button class="tb-btn" style="background:var(--accent);color:#000;border-color:var(--accent);font-weight:600"
+            id="fp-next-btn" onclick="fpNext()">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="screen" id="screen-practice">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val" id="p-wpm">0</div>
+          <div class="stat-lbl">WPM</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="p-acc">100%</div>
+          <div class="stat-lbl">Accuracy</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="p-combo">0</div>
+          <div class="stat-lbl">Combo</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="p-chars">0</div>
+          <div class="stat-lbl">Chars typed</div>
+        </div>
+      </div>
+      <div class="words-display" id="practice-display" style="font-size:22px"></div>
+      <div class="type-area">
+        <div class="type-line">
+          <input class="type-input" id="practice-input" placeholder="Start typing…" autocomplete="off" autocorrect="off"
+            spellcheck="false">
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="tb-btn" onclick="newPractice()">↺ New text</button>
+          <select class="tb-select" id="p-diff" onchange="newPractice()">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPEED TEST -->
+    <div class="screen" id="screen-test">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val" id="t-wpm">0</div>
+          <div class="stat-lbl">WPM</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="t-acc">100%</div>
+          <div class="stat-lbl">Accuracy</div>
+        </div>
+        <div class="stat-box">
+          <div class="timer-ring" id="t-timer">60</div>
+          <div class="stat-lbl">Seconds</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="t-best">0</div>
+          <div class="stat-lbl">Best WPM</div>
+        </div>
+      </div>
+      <div class="test-words" id="test-display"></div>
+      <div class="type-area">
+        <div class="type-line">
+          <input class="type-input" id="test-input" placeholder="Start typing to begin…" autocomplete="off"
+            autocorrect="off" spellcheck="false">
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="tb-btn" onclick="resetTest()">↺ Reset</button>
+          <select class="tb-select" id="test-dur" onchange="resetTest()">
+            <option value="30">30 sec</option>
+            <option value="60" selected>60 sec</option>
+            <option value="120">2 min</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="screen" id="screen-progress">
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-val" id="pr-best">0</div>
+          <div class="stat-lbl">Best WPM</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="pr-avg">0</div>
+          <div class="stat-lbl">Avg WPM</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="pr-done">0</div>
+          <div class="stat-lbl">Lessons done</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="pr-tests">0</div>
+          <div class="stat-lbl">Tests taken</div>
+        </div>
+      </div>
+      <div class="section-label" style="margin-top:8px">Skill breakdown</div>
+      <div class="skill-row"><span class="skill-name">Home row</span>
+        <div class="skill-bar">
+          <div class="skill-fill" id="sk-home" style="width:0%"></div>
+        </div><span class="skill-pct" id="sk-home-v">0%</span>
+      </div>
+      <div class="skill-row"><span class="skill-name">Top row</span>
+        <div class="skill-bar">
+          <div class="skill-fill" id="sk-top" style="width:0%"></div>
+        </div><span class="skill-pct" id="sk-top-v">0%</span>
+      </div>
+      <div class="skill-row"><span class="skill-name">Bottom row</span>
+        <div class="skill-bar">
+          <div class="skill-fill" id="sk-bot" style="width:0%"></div>
+        </div><span class="skill-pct" id="sk-bot-v">0%</span>
+      </div>
+      <div class="skill-row"><span class="skill-name">Numbers</span>
+        <div class="skill-bar">
+          <div class="skill-fill" id="sk-num" style="width:0%"></div>
+        </div><span class="skill-pct" id="sk-num-v">0%</span>
+      </div>
+      <div class="skill-row"><span class="skill-name">Speed</span>
+        <div class="skill-bar">
+          <div class="skill-fill" id="sk-spd" style="width:0%"></div>
+        </div><span class="skill-pct" id="sk-spd-v">0%</span>
+      </div>
+      <div class="section-label" style="margin-top:24px">Achievements</div>
+      <div class="badge-wrap" id="badges"></div>
+      <div class="chart-container">
+        <div class="section-label" style="margin-bottom:10px">WPM history</div>
+        <canvas id="wpm-chart" height="100"></canvas>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RESULT POPUP -->
+  <div class="overlay" id="result-overlay">
+    <div class="result-modal">
+      <button class="result-close" onclick="closeResult()">✕</button>
+      <div class="result-emoji" id="res-emoji">🎉</div>
+      <div class="result-title" id="res-title">Excellent!</div>
+      <div class="result-cards">
+        <div class="result-card">
+          <div class="result-card-label">
+            <span class="goal-tag" id="res-goal">Goal: 30</span>
+            WPM
+          </div>
+          <div class="result-card-val" id="res-wpm">0</div>
+        </div>
+        <div class="result-card">
+          <div class="result-card-label">Accuracy</div>
+          <div class="result-card-val green" id="res-acc">0%</div>
+        </div>
+      </div>
+      <div class="result-btns">
+        <button class="btn-home" onclick="closeResult();closeLesson()">🏠</button>
+        <button class="btn-retry" onclick="closeResult();retryLesson()">↺</button>
+        <button class="btn-next" onclick="closeResult();nextLesson()">Next lesson ▶▶</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</body>
+
+</html>
