@@ -1,16 +1,33 @@
 'use strict';
 
 const LESSONS = [
-  { id:1,  title:'Home Row Basics',     keys:['a','s','d','f','j','k','l',';'],        done:false, current:true },
-  { id:2,  title:'Home Row Practice',   keys:['a','s','d','f','j','k','l'],            done:false },
-  { id:3,  title:'Add: G & H',          keys:['g','h'],                                done:false },
-  { id:4,  title:'Review Home Row',     keys:['a','s','d','f','g','h','j','k','l'],    done:false },
-  { id:5,  title:'Upper Row: E & I',    keys:['e','i'],                                done:false },
-  { id:6,  title:'Upper Row: R & U',    keys:['r','u'],                                done:false },
-  { id:7,  title:'Upper Row: T & Y',    keys:['t','y'],                                done:false },
-  { id:8,  title:'Upper Row: W & O',    keys:['w','o'],                                done:false },
-  { id:9,  title:'Upper Row: Q & P',    keys:['q','p'],                                done:false },
-  { id:10, title:'Review Upper Row',    keys:['q','w','e','r','t','y','u','i','o','p'],done:false },
+  { id:1,  title:'Anchor Keys: F & J',  keys:['f','j'],                                done:false, current:true },
+  { id:2,  title:'Middle Fingers: D & K',keys:['d','k'],                                done:false },
+  { id:3,  title:'Ring Fingers: S & L',  keys:['s','l'],                                done:false },
+  { id:4,  title:'Pinky Fingers: A & ;', keys:['a',';'],                                done:false },
+  { id:5,  title:'Home Row: G & H',      keys:['g','h'],                                done:false },
+  { id:6,  title:'Upper Row: R & U',     keys:['r','u'],                                done:false },
+  { id:7,  title:'Upper Row: T & Y',     keys:['t','y'],                                done:false },
+  { id:8,  title:'Upper Row: E & I',     keys:['e','i'],                                done:false },
+  { id:9,  title:'Upper Row: W & O',     keys:['w','o'],                                done:false },
+  { id:10, title:'Upper Row: Q & P',     keys:['q','p'],                                done:false },
+  { id:11, title:'Home Row Review',      keys:['a','s','d','f','g','h','j','k','l',';'],done:false },
+  { id:12, title:'Lower Row: V & M',     keys:['v','m'],                                done:false },
+  { id:13, title:'Lower Row: C & ,',     keys:['c',','],                                done:false },
+  { id:14, title:'Lower Row: X & .',     keys:['x','.'],                                done:false },
+  { id:15, title:'Lower Row: Z & /',     keys:['z','/'],                                done:false },
+  { id:16, title:'Bottom Row Review',    keys:['z','x','c','v','m',',','.','/'],        done:false },
+  { id:17, title:'Numbers: 4 & 7',       keys:['4','7'],                                done:false },
+  { id:18, title:'Numbers: 3 & 8',       keys:['3','8'],                                done:false },
+  { id:19, title:'Numbers: 2 & 9',       keys:['2','9'],                                done:false },
+  { id:20, title:'Numbers: 1 & 0',       keys:['1','0'],                                done:false },
+  { id:21, title:'Numbers Review',       keys:['1','2','3','4','5','6','7','8','9','0'],done:false },
+  { id:22, title:'Shift Caps A-F',       keys:['A','S','D','F','G'],                    done:false },
+  { id:23, title:'Shift Caps J-L',       keys:['J','K','L'],                            done:false },
+  { id:24, title:'Shift Upper Caps',     keys:['Q','W','E','R','T','Y','U','I','O','P'],done:false },
+  { id:25, title:'Shift Lower Caps',     keys:['Z','X','C','V','B','N','M'],            done:false },
+  { id:26, title:'Common Words I',       keys:['a','s','d','f','g','h','j','k','l','e','i','o','u'],done:false },
+  { id:27, title:'Full Keyboard',        keys:['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],done:false },
   { id:11, title:'Lower Row: V & M',    keys:['v','m'],                                done:false },
   { id:12, title:'Lower Row: C & ,',    keys:['c',','],                                done:false },
   { id:13, title:'Lower Row: X & .',    keys:['x','.'],                                done:false },
@@ -74,6 +91,17 @@ const WORD_BANKS = {
   full:   ['quick','brown','fox','jumps','over','lazy','dog','pack','my','box','with','five','dozen',
            'liquor','jugs','how','vexingly','bright','quiz','gawked','jumbo','sphinx'],
 };
+
+const LESSON_WORD_BANK = [
+  'faj', 'jaf', 'fade', 'safe', 'jazz', 'mask', 'task',
+  'desk', 'desk', 'desk', 'milk', 'dill', 'kill', 'skill', 'dusk',
+  'lass', 'sell', 'less', 'sill', 'sell', 'alls', 'lass',
+  'sass', 'alfa', 'fall', 'jail', 'jazz', 'gala', 'halo', 'joke',
+  'have', 'tape', 'type', 'your', 'tour', 'home', 'word', 'high',
+  'made', 'take', 'note', 'time', 'tone', 'zone', 'made', 'mine',
+  'road', 'pray', 'pack', 'quay', 'quit', 'rope', 'your', 'work',
+  'move', 'come', 'zone', 'nice', 'code', 'safe', 'case', 'mice', 'vase',
+];
  
 // ============================================
 // STATE
@@ -132,6 +160,8 @@ const DOM = {
   prevBtn:        $('prev-lesson-btn'),
   nextBtn:        $('next-lesson-btn'),
   handsRow:       $('hands-row'),
+  sidebar:        $('sidebar'),
+  sidebarToggleBtn:$('sidebar-toggle-btn'),
   leftHandSvg:    $('left-hand-svg'),
   rightHandSvg:   $('right-hand-svg'),
   modalOverlay:   $('modal-overlay'),
@@ -169,7 +199,39 @@ DOM.navPills.forEach(pill => {
     showView(v);
   });
 });
- 
+
+function isSidebarOpen() {
+  if (!DOM.sidebar) return false;
+  if (window.innerWidth <= 768) {
+    return DOM.sidebar.classList.contains('open');
+  }
+  return !DOM.sidebar.classList.contains('closed');
+}
+
+function setSidebarOpen(open) {
+  if (!DOM.sidebar || !DOM.sidebarToggleBtn) return;
+  if (window.innerWidth <= 768) {
+    DOM.sidebar.classList.toggle('open', open);
+    DOM.sidebar.classList.toggle('closed', !open);
+  } else {
+    DOM.sidebar.classList.toggle('closed', !open);
+    DOM.sidebar.classList.remove('open');
+  }
+  DOM.sidebarToggleBtn.setAttribute('aria-expanded', String(open));
+}
+
+DOM.sidebarToggleBtn?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  setSidebarOpen(!isSidebarOpen());
+});
+
+document.addEventListener('click', (event) => {
+  if (!DOM.sidebar || !DOM.sidebarToggleBtn) return;
+  if (!isSidebarOpen()) return;
+  if (DOM.sidebar.contains(event.target) || DOM.sidebarToggleBtn.contains(event.target)) return;
+  setSidebarOpen(false);
+});
+
 DOM.backBtn.addEventListener('click', () => {
   stopTimer();
   showView('learn');
@@ -207,7 +269,10 @@ function buildLessonGrid() {
       <div class="card-keys">${keysHtml}</div>
     `;
     card.style.animationDelay = `${idx * 0.03}s`;
-    card.addEventListener('click', () => launchLesson(idx));
+    card.addEventListener('click', () => {
+      if (!lesson.current && !lesson.done) return;
+      launchLesson(idx);
+    });
     DOM.lessonsGrid.appendChild(card);
   });
 }
@@ -242,41 +307,109 @@ function launchLesson(lessonIdx) {
 function generateTypingText(lesson) {
   const letters = lesson.keys.filter(k => /^[a-zA-Z]$/.test(k)).map(k => k.toLowerCase());
   const specials = lesson.keys.filter(k => /^[^a-zA-Z]$/.test(k));
-  const allKeys = [...letters];
- 
-  let pool = [];
- 
-  if (letters.length > 0) {
-    // Generate pseudo-words from the lesson keys
-    const wordCount = 50;
-    for (let i = 0; i < wordCount; i++) {
-      const len = 2 + Math.floor(Math.random() * 5);
-      let word = '';
-      for (let j = 0; j < len; j++) {
-        word += letters[Math.floor(Math.random() * letters.length)];
-      }
-      pool.push(word);
-    }
-    // Sprinkle in specials if any
-    if (specials.length > 0) {
-      for (let i = 0; i < 8; i++) {
-        pool.splice(Math.floor(Math.random() * pool.length), 0, specials[Math.floor(Math.random() * specials.length)]);
-      }
-    }
+  const practiceLines = [];
+
+  if (letters.length <= 2) {
+    practiceLines.push(...buildFamiliaritySteps(letters));
+    practiceLines.push(...buildCombinationSteps(letters));
   } else {
-    // Number or special only lesson
-    for (let i = 0; i < 60; i++) {
-      pool.push(allKeys[Math.floor(Math.random() * allKeys.length)]);
+    practiceLines.push(...buildFamiliaritySteps(letters));
+    practiceLines.push(...buildCombinationSteps(letters));
+    const wordPractice = buildWordPractice(letters, 6);
+    if (wordPractice.length > 0) {
+      practiceLines.push(...wordPractice);
+    } else {
+      practiceLines.push(...buildCombinationSteps(letters, 4, true));
     }
   }
- 
-  // Shuffle
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+
+  if (specials.length > 0 && practiceLines.length < 12) {
+    practiceLines.push(...specials.map(ch => `${ch} ${ch} ${ch}`).slice(0, 3));
   }
- 
-  state.typingText = pool.slice(0, 45).join(' ');
+
+  state.typingText = practiceLines.slice(0, 45).join(' ');
+}
+
+function buildFamiliaritySteps(keys) {
+  if (keys.length === 0) return [];
+  if (keys.length === 1) {
+    const k = keys[0];
+    return [
+      `${k.repeat(4)}`,
+      `${k.repeat(5)}`,
+      `${k.repeat(3)} ${k.repeat(3)}`,
+      `${k.repeat(4)} ${k.repeat(4)}`,
+    ];
+  }
+  if (keys.length === 2) {
+    const [a, b] = keys;
+    return [
+      `${a.repeat(4)}`,
+      `${b.repeat(4)}`,
+      `${a.repeat(2)}${b.repeat(2)}`,
+      `${b.repeat(2)}${a.repeat(2)}`,
+      `${a.repeat(3)}${b.repeat(2)}`,
+      `${b.repeat(3)}${a.repeat(2)}`,
+    ];
+  }
+
+  const [a, b, c] = keys;
+  return [
+    `${a.repeat(4)}`,
+    `${b.repeat(4)}`,
+    `${c.repeat(4)}`,
+    `${a.repeat(2)}${b.repeat(2)}`,
+    `${a}${b}${c}${b}`,
+    `${a}${b}${c}`,
+  ];
+}
+
+function buildCombinationSteps(keys, count = 6, allowLonger = false) {
+  const patterns = [];
+  const base = keys.slice(0, Math.min(keys.length, 4));
+
+  if (keys.length === 1) {
+    const k = keys[0];
+    patterns.push(`${k.repeat(4)}`);
+    patterns.push(`${k.repeat(5)}`);
+    patterns.push(`${k.repeat(3)} ${k.repeat(2)}`);
+    patterns.push(`${k.repeat(2)} ${k.repeat(3)}`);
+  } else if (keys.length === 2) {
+    const [a, b] = keys;
+    patterns.push(`${a.repeat(4)}`);
+    patterns.push(`${b.repeat(4)}`);
+    patterns.push(`${a.repeat(3)}${b}`);
+    patterns.push(`${b.repeat(3)}${a}`);
+    patterns.push(`${a.repeat(2)}${b.repeat(2)}`);
+    patterns.push(`${a.repeat(3)}${b.repeat(2)}`);
+    patterns.push(`${b.repeat(3)}${a.repeat(2)}`);
+    patterns.push(`${a.repeat(4)}${b}`);
+    patterns.push(`${b.repeat(4)}${a}`);
+  } else {
+    patterns.push(base.join(''));
+    patterns.push(base.slice().reverse().join(''));
+    patterns.push(`${base[0].repeat(3)}${base[1] || ''}`);
+    if (base[1]) patterns.push(`${base[1].repeat(3)}${base[0]}`);
+    if (base.length >= 3) patterns.push(`${base[0]}${base[1]}${base[2]}${base[1]}`);
+    if (base.length >= 4) patterns.push(`${base[0]}${base[1]}${base[2]}${base[3]}${base[2]}`);
+  }
+
+  while (patterns.length < count) {
+    const next = keys.slice(0, Math.min(keys.length, 4)).map((k, idx) => k.repeat(idx + 2)).join('');
+    if (!patterns.includes(next)) patterns.push(next);
+    else break;
+  }
+
+  return patterns.slice(0, count);
+}
+
+function buildWordPractice(keys, maxCount = 6) {
+  const allowed = new Set(keys);
+  const validWords = LESSON_WORD_BANK.filter(word => {
+    return word.length >= 3 && word.length <= 4 && [...new Set(word)].every(ch => allowed.has(ch));
+  });
+  if (validWords.length === 0) return [];
+  return validWords.slice(0, maxCount);
 }
  
 // ============================================
@@ -1122,6 +1255,7 @@ function init() {
   buildLessonGrid();
   buildKeyboard();
   showView('learn');
+  if (window.innerWidth <= 768) setSidebarOpen(false);
  
   // Stagger card animation delays
   document.querySelectorAll('.lesson-card').forEach((card, i) => {
