@@ -5,342 +5,264 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TypoLearn — Touch Typing Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Sora:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-  <header>
-    <div class="logo">typo<span>learn</span></div>
-    <nav>
-      <button class="active" onclick="showScreen('lessons',this)">Lessons</button>
-      <button onclick="showScreen('fingers',this)">Finger Placement</button>
-      <button onclick="showScreen('practice',this)">Practice</button>
-      <button onclick="showScreen('test',this)">Speed Test</button>
-      <button onclick="showScreen('progress',this)">Progress</button>
-    </nav>
-    <div class="xp-pill">⚡ <span id="total-xp">0</span> XP</div>
-  </header>
-
-  <main>
-
-    <!-- LESSONS -->
-    <div class="screen active" id="screen-lessons">
-      <div id="lesson-list">
-        <div class="section-label">Choose a lesson</div>
-        <div class="lesson-grid" id="lesson-grid"></div>
+  <nav class="navbar">
+    <a class="logo" href="#">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="5" width="3" height="3" rx="0.75" fill="currentColor" opacity="0.6" />
+          <rect x="5" y="5" width="3" height="3" rx="0.75" fill="currentColor" opacity="0.8" />
+          <rect x="9" y="5" width="3" height="3" rx="0.75" fill="currentColor" />
+          <rect x="13" y="5" width="3" height="3" rx="0.75" fill="currentColor" opacity="0.8" />
+          <rect x="3" y="10" width="3" height="3" rx="0.75" fill="currentColor" opacity="0.7" />
+          <rect x="7" y="10" width="3" height="3" rx="0.75" fill="currentColor" />
+          <rect x="11" y="10" width="3" height="3" rx="0.75" fill="currentColor" opacity="0.7" />
+        </svg>
       </div>
-      <div id="lesson-area">
-        <div class="lesson-header">
-          <div class="lesson-title-big" id="lesson-heading"></div>
-          <button class="close-btn" onclick="closeLesson()">✕ Close</button>
-        </div>
-        <div class="mode-tabs">
-          <button class="mode-tab active" onclick="setMode('learn',this)">Learn</button>
-          <button class="mode-tab" onclick="setMode('repeat',this)">Repeat</button>
-          <button class="mode-tab" onclick="setMode('words',this)">Words</button>
-        </div>
+      VocaType
+    </a>
+    <div class="nav-center">
+      <button class="nav-pill active" data-view="learn">Learn</button>
+      <button class="nav-pill" data-view="practice">Practice</button>
+      <button class="nav-pill" data-view="settings">Settings</button>
+    </div>
+    <div class="nav-right">
+      <div class="streak-badge">🔥 3</div>
+    </div>
+  </nav>
 
-        <!-- LEARN MODE -->
-        <div id="mode-learn">
-          <div class="progress-dots" id="learn-dots"></div>
-          <div class="learn-card" id="learn-card">
-            <h2 id="learn-key-title"></h2>
-            <p id="learn-instruction"></p>
+  <!-- APP SHELL -->
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Language</div>
+        <div class="lang-list" id="lang-list">
+          <button class="lang-item active" data-lang="en">
+            <span class="flag">🇺🇸</span>
+            <span class="lang-name">English</span>
+            <span class="lang-tag">QWERTY</span>
+          </button>
+          <button class="lang-item" data-lang="ru">
+            <span class="flag">🇷🇺</span>
+            <span class="lang-name">Russian</span>
+            <span class="lang-tag">JCUKEN</span>
+          </button>
+          <button class="lang-item" data-lang="th">
+            <span class="flag">🇹🇭</span>
+            <span class="lang-name">Thai</span>
+            <span class="lang-tag">Kedmanee</span>
+          </button>
+          <button class="lang-item" data-lang="ko">
+            <span class="flag">🇰🇷</span>
+            <span class="lang-name">Korean</span>
+            <span class="lang-tag">2-Set</span>
+          </button>
+          <button class="lang-item disabled" data-lang="ja">
+            <span class="flag">🇯🇵</span>
+            <span class="lang-name">Japanese</span>
+            <span class="lang-tag soon">Soon</span>
+          </button>
+          <button class="lang-item disabled" data-lang="zh">
+            <span class="flag">🇹🇼</span>
+            <span class="lang-name">Chinese</span>
+            <span class="lang-tag soon">Soon</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Progress</div>
+        <div class="progress-card">
+          <div class="progress-header">
+            <span id="progress-lang-name">English</span>
+            <span id="progress-pct">37%</span>
           </div>
-          <div class="keyboard-wrap">
-            <div class="kb" id="learn-kb"></div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill" style="width:37%"></div>
+          </div>
+          <div class="progress-foot">
+            <span id="progress-lessons">10 / 27 lessons</span>
           </div>
         </div>
+      </div>
 
-        <!-- REPEAT MODE -->
-        <div id="mode-repeat" style="display:none">
-          <div class="repeat-boxes" id="repeat-boxes"></div>
-          <div class="type-area" style="margin-bottom:20px">
-            <div class="type-line">
-              <input class="type-input" id="repeat-input" placeholder="Press the highlighted key…" autocomplete="off"
-                autocorrect="off" spellcheck="false" maxlength="1">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Stats</div>
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <span class="mini-val" style="color:var(--accent)">42</span>
+            <span class="mini-key">Best WPM</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-val" style="color:var(--success)">94%</span>
+            <span class="mini-key">Accuracy</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-val" style="color:var(--warning)">18</span>
+            <span class="mini-key">Mastered</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Review</div>
+        <button class="review-btn" id="review-btn">
+          <span class="review-icon">↺</span>
+          <span>Keys to review</span>
+          <span class="review-count">5</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- LESSONS VIEW -->
+      <div id="view-learn" class="view active">
+        <div class="learn-inner">
+          <div class="learn-header">
+            <h1>Let's learn to type with all 10 fingers!</h1>
+            <p>Complete lessons in order to build correct finger placement and muscle memory from day one.</p>
+          </div>
+          <div class="lessons-grid" id="lessons-grid"></div>
+        </div>
+      </div>
+
+      <!-- PRACTICE VIEW -->
+      <div id="view-typing" class="view">
+        <div class="typing-screen">
+
+          <div class="typing-top">
+            <button class="back-btn" id="back-btn">← Back</button>
+            <div class="lesson-info">
+              <span class="lesson-badge" id="lesson-badge">Lesson 5</span>
+              <span class="lesson-name-sm" id="lesson-name-sm">Upper Row: E & I</span>
             </div>
+            <button class="restart-btn" id="restart-btn">↺ Restart</button>
           </div>
-          <div class="keyboard-wrap">
-            <div class="kb" id="repeat-kb"></div>
-          </div>
-        </div>
 
-        <!-- WORDS MODE -->
-        <div id="mode-words" style="display:none">
+          <div class="typing-hint" id="typing-hint">
+            <span class="hint-icon">👆</span> Click here to start typing
+          </div>
+
+          <!-- STATS ROW -->
           <div class="stats-row">
             <div class="stat-box">
-              <div class="stat-val" id="w-wpm">0</div>
+              <div class="stat-val" id="stat-wpm">0</div>
               <div class="stat-lbl">WPM</div>
             </div>
             <div class="stat-box">
-              <div class="stat-val" id="w-acc">100%</div>
+              <div class="stat-val" id="stat-acc">100%</div>
               <div class="stat-lbl">Accuracy</div>
             </div>
             <div class="stat-box">
-              <div class="stat-val" id="w-combo">0</div>
-              <div class="stat-lbl">Combo</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-val" id="w-time">0s</div>
+              <div class="stat-val" id="stat-time">0s</div>
               <div class="stat-lbl">Time</div>
             </div>
+            <div class="stat-box">
+              <div class="stat-val" id="stat-chars">0</div>
+              <div class="stat-lbl">Chars</div>
+            </div>
           </div>
-          <div class="words-display" id="words-display"></div>
-          <div class="type-area">
-            <div class="type-line">
-              <input class="type-input" id="words-input" placeholder="Start typing the words…" autocomplete="off"
-                autocorrect="off" spellcheck="false">
+
+          <!-- TYPING AREA -->
+          <div class="typing-box" id="typing-box" tabindex="0">
+            <div class="typing-text" id="typing-text" aria-live="polite"></div>
+            <input type="text" id="hidden-input" class="hidden-input" autocomplete="off" autocorrect="off"
+              autocapitalize="off" spellcheck="false" aria-label="Typing input">
+          </div>
+
+          <!-- KEYBOARD -->
+          <div class="keyboard-container">
+            <div class="keyboard" id="keyboard" role="img" aria-label="Keyboard layout"></div>
+          </div>
+
+          <!-- HAND DIAGRAM -->
+          <div class="hands-row" id="hands-row">
+            <div class="hand-label left-hand-label">Left Hand</div>
+            <svg class="hand-svg" id="left-hand-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"></svg>
+            <svg class="hand-svg" id="right-hand-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg"></svg>
+            <div class="hand-label right-hand-label">Right Hand</div>
+          </div>
+
+          <!-- CONTROLS -->
+          <div class="typing-controls">
+            <button class="ctrl-btn ghost" id="prev-lesson-btn">← Previous</button>
+            <button class="ctrl-btn primary" id="next-lesson-btn">Next Lesson →</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SETTINGS VIEW -->
+      <div id="view-settings" class="view">
+        <div class="settings-inner">
+          <h2 class="settings-title">Settings</h2>
+          <div class="settings-group">
+            <div class="settings-label">Appearance</div>
+            <div class="setting-row">
+              <span>Theme</span>
+              <div class="theme-toggle">
+                <button class="theme-btn active" data-theme="dark">Dark</button>
+                <button class="theme-btn" data-theme="light">Light</button>
+                <button class="theme-btn" data-theme="system">System</button>
+              </div>
+            </div>
+          </div>
+          <div class="settings-group">
+            <div class="settings-label">Keyboard</div>
+            <div class="setting-row">
+              <span>Show keyboard</span>
+              <label class="toggle"><input type="checkbox" checked id="toggle-keyboard"><span
+                  class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <span>Show hand guide</span>
+              <label class="toggle"><input type="checkbox" checked id="toggle-hands"><span
+                  class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <span>Colorful finger mode</span>
+              <label class="toggle"><input type="checkbox" checked id="toggle-colors"><span
+                  class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="settings-group">
+            <div class="settings-label">Sound</div>
+            <div class="setting-row">
+              <span>Key sound</span>
+              <label class="toggle"><input type="checkbox" id="toggle-sound"><span class="toggle-slider"></span></label>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- FINGER PLACEMENT -->
-    <div class="screen" id="screen-fingers">
-      <div class="fp-intro">
-        <div class="fp-intro-icon">🖐️</div>
-        <div>
-          <h2>10-Finger Placement — QWERTY</h2>
-          <p>Each finger has its own place on the keyboard. This section will teach you the correct position and give
-            you practice.</p>
-        </div>
-      </div>
+    </main>
+  </div>
 
-      <!-- Step tabs -->
-      <div class="fp-steps">
-        <div class="fp-step active" id="fstep-0" onclick="fpSetStep(0)">
-          <div class="fp-step-dot" style="background:#fbbf24"></div> Overview
-        </div>
-        <div class="fp-step" id="fstep-1" onclick="fpSetStep(1)">
-          <div class="fp-step-dot fc-pinky"></div> Pinky fingers
-        </div>
-        <div class="fp-step" id="fstep-2" onclick="fpSetStep(2)">
-          <div class="fp-step-dot fc-ring"></div> Ring fingers
-        </div>
-        <div class="fp-step" id="fstep-3" onclick="fpSetStep(3)">
-          <div class="fp-step-dot fc-middle"></div> Middle fingers
-        </div>
-        <div class="fp-step" id="fstep-4" onclick="fpSetStep(4)">
-          <div class="fp-step-dot fc-index"></div> Index fingers
-        </div>
-        <div class="fp-step" id="fstep-5" onclick="fpSetStep(5)">
-          <div class="fp-step-dot fc-thumb"></div> Thumbs
-        </div>
-        <div class="fp-step" id="fstep-6" onclick="fpSetStep(6)">
-          <div class="fp-step-dot" style="background:var(--accent)"></div> Practice drill
-        </div>
+  <!-- COMPLETION MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">🎉</div>
+      <h2 class="modal-title">Lesson Complete!</h2>
+      <div class="modal-stats">
+        <div class="modal-stat"><span id="modal-wpm">0</span><small>WPM</small></div>
+        <div class="modal-stat"><span id="modal-acc">100%</span><small>Accuracy</small></div>
+        <div class="modal-stat"><span id="modal-time">0s</span><small>Time</small></div>
       </div>
-
-      <!-- Keyboard visual -->
-      <div class="fp-kb-wrap">
-        <div id="fp-keyboard"></div>
-      </div>
-
-      <!-- Legend -->
-      <div class="fp-legend" id="fp-legend">
-        <div class="fp-leg-item" onclick="fpClickLegend('L-pinky','R-pinky')">
-          <div class="fp-leg-dot fc-pinky"></div><span class="fp-leg-label">Pinky (L &amp; R)</span>
-        </div>
-        <div class="fp-leg-item" onclick="fpClickLegend('L-ring','R-ring')">
-          <div class="fp-leg-dot fc-ring"></div><span class="fp-leg-label">Ring (L &amp; R)</span>
-        </div>
-        <div class="fp-leg-item" onclick="fpClickLegend('L-middle','R-middle')">
-          <div class="fp-leg-dot fc-middle"></div><span class="fp-leg-label">Middle (L &amp; R)</span>
-        </div>
-        <div class="fp-leg-item" onclick="fpClickLegend('L-index','R-index')">
-          <div class="fp-leg-dot fc-index"></div><span class="fp-leg-label">Index (L &amp; R)</span>
-        </div>
-        <div class="fp-leg-item" onclick="fpClickLegend('thumb')">
-          <div class="fp-leg-dot fc-thumb"></div><span class="fp-leg-label">Thumbs (Space)</span>
-        </div>
-      </div>
-
-      <!-- Info card for current step -->
-      <div class="fp-practice-box" id="fp-info-box">
-        <h3 id="fp-info-title">All fingers together</h3>
-        <p id="fp-info-desc" style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px"></p>
-        <!-- Drill area (shown in practice step) -->
-        <div id="fp-drill-area" style="display:none">
-          <div class="fp-msg" id="fp-drill-msg"></div>
-          <div class="fp-drill-keys" id="fp-drill-keys"></div>
-          <div class="fp-progress-bar">
-            <div class="fp-progress-fill" id="fp-drill-prog"></div>
-          </div>
-          <input id="fp-drill-input" class="type-input"
-            style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;width:100%;margin-bottom:4px"
-            placeholder="Press the highlighted key…" autocomplete="off" autocorrect="off" spellcheck="false">
-        </div>
-        <div class="fp-nav-btns">
-          <button class="tb-btn" id="fp-prev-btn" onclick="fpPrev()">← Previous</button>
-          <button class="tb-btn" style="background:var(--accent);color:#000;border-color:var(--accent);font-weight:600"
-            id="fp-next-btn" onclick="fpNext()">Next →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PRACTICE -->
-    <div class="screen" id="screen-practice">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-val" id="p-wpm">0</div>
-          <div class="stat-lbl">WPM</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="p-acc">100%</div>
-          <div class="stat-lbl">Accuracy</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="p-combo">0</div>
-          <div class="stat-lbl">Combo</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="p-chars">0</div>
-          <div class="stat-lbl">Chars typed</div>
-        </div>
-      </div>
-      <div class="words-display" id="practice-display" style="font-size:22px"></div>
-      <div class="type-area">
-        <div class="type-line">
-          <input class="type-input" id="practice-input" placeholder="Start typing…" autocomplete="off" autocorrect="off"
-            spellcheck="false">
-        </div>
-      </div>
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <button class="tb-btn" onclick="newPractice()">↺ New text</button>
-          <select class="tb-select" id="p-diff" onchange="newPractice()">
-            <option value="easy">Easy</option>
-            <option value="medium" selected>Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- SPEED TEST -->
-    <div class="screen" id="screen-test">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-val" id="t-wpm">0</div>
-          <div class="stat-lbl">WPM</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="t-acc">100%</div>
-          <div class="stat-lbl">Accuracy</div>
-        </div>
-        <div class="stat-box">
-          <div class="timer-ring" id="t-timer">60</div>
-          <div class="stat-lbl">Seconds</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="t-best">0</div>
-          <div class="stat-lbl">Best WPM</div>
-        </div>
-      </div>
-      <div class="test-words" id="test-display"></div>
-      <div class="type-area">
-        <div class="type-line">
-          <input class="type-input" id="test-input" placeholder="Start typing to begin…" autocomplete="off"
-            autocorrect="off" spellcheck="false">
-        </div>
-      </div>
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <button class="tb-btn" onclick="resetTest()">↺ Reset</button>
-          <select class="tb-select" id="test-dur" onchange="resetTest()">
-            <option value="30">30 sec</option>
-            <option value="60" selected>60 sec</option>
-            <option value="120">2 min</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROGRESS -->
-    <div class="screen" id="screen-progress">
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-val" id="pr-best">0</div>
-          <div class="stat-lbl">Best WPM</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="pr-avg">0</div>
-          <div class="stat-lbl">Avg WPM</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="pr-done">0</div>
-          <div class="stat-lbl">Lessons done</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="pr-tests">0</div>
-          <div class="stat-lbl">Tests taken</div>
-        </div>
-      </div>
-      <div class="section-label" style="margin-top:8px">Skill breakdown</div>
-      <div class="skill-row"><span class="skill-name">Home row</span>
-        <div class="skill-bar">
-          <div class="skill-fill" id="sk-home" style="width:0%"></div>
-        </div><span class="skill-pct" id="sk-home-v">0%</span>
-      </div>
-      <div class="skill-row"><span class="skill-name">Top row</span>
-        <div class="skill-bar">
-          <div class="skill-fill" id="sk-top" style="width:0%"></div>
-        </div><span class="skill-pct" id="sk-top-v">0%</span>
-      </div>
-      <div class="skill-row"><span class="skill-name">Bottom row</span>
-        <div class="skill-bar">
-          <div class="skill-fill" id="sk-bot" style="width:0%"></div>
-        </div><span class="skill-pct" id="sk-bot-v">0%</span>
-      </div>
-      <div class="skill-row"><span class="skill-name">Numbers</span>
-        <div class="skill-bar">
-          <div class="skill-fill" id="sk-num" style="width:0%"></div>
-        </div><span class="skill-pct" id="sk-num-v">0%</span>
-      </div>
-      <div class="skill-row"><span class="skill-name">Speed</span>
-        <div class="skill-bar">
-          <div class="skill-fill" id="sk-spd" style="width:0%"></div>
-        </div><span class="skill-pct" id="sk-spd-v">0%</span>
-      </div>
-      <div class="section-label" style="margin-top:24px">Achievements</div>
-      <div class="badge-wrap" id="badges"></div>
-      <div class="chart-container">
-        <div class="section-label" style="margin-bottom:10px">WPM history</div>
-        <canvas id="wpm-chart" height="100"></canvas>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- RESULT POPUP -->
-  <div class="overlay" id="result-overlay">
-    <div class="result-modal">
-      <button class="result-close" onclick="closeResult()">✕</button>
-      <div class="result-emoji" id="res-emoji">🎉</div>
-      <div class="result-title" id="res-title">Excellent!</div>
-      <div class="result-cards">
-        <div class="result-card">
-          <div class="result-card-label">
-            <span class="goal-tag" id="res-goal">Goal: 30</span>
-            WPM
-          </div>
-          <div class="result-card-val" id="res-wpm">0</div>
-        </div>
-        <div class="result-card">
-          <div class="result-card-label">Accuracy</div>
-          <div class="result-card-val green" id="res-acc">0%</div>
-        </div>
-      </div>
-      <div class="result-btns">
-        <button class="btn-home" onclick="closeResult();closeLesson()">🏠</button>
-        <button class="btn-retry" onclick="closeResult();retryLesson()">↺</button>
-        <button class="btn-next" onclick="closeResult();nextLesson()">Next lesson ▶▶</button>
+      <div class="modal-actions">
+        <button class="ctrl-btn ghost" id="modal-retry">↺ Try Again</button>
+        <button class="ctrl-btn primary" id="modal-next">Next Lesson →</button>
       </div>
     </div>
   </div>

@@ -1,787 +1,753 @@
-// ═══════════════════════════════════════════════════════
-// RANDOM WORD GENERATION
-// ═══════════════════════════════════════════════════════
+'use strict';
 
-function generateRandomWord(chars, minLen = 2, maxLen = 6) {
-    const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
-    let word = '';
-    for (let i = 0; i < len; i++) {
-        word += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return word;
-}
-
-function generateWordsForLesson(keys, count = 12) {
-    const chars = keys.replace(/\s/g, '').split('');
-    const words = [];
-    for (let i = 0; i < count; i++) {
-        words.push(generateRandomWord(chars, 2, 5));
-    }
-    return words.join(' ');
-}
-
-function generateRandomText(difficulty = 'medium', wordCount = 15) {
-    const commonWords = ['the', 'and', 'to', 'of', 'a', 'in', 'is', 'that', 'it', 'for', 'you', 'on', 'be', 'this', 'with', 'have', 'from', 'or', 'by', 'an', 'as', 'are', 'but', 'not', 'your', 'all', 'can', 'her', 'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when', 'my', 'we', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us'];
-    
-    const minWordLen = difficulty === 'easy' ? 3 : difficulty === 'medium' ? 4 : 6;
-    const maxWordLen = difficulty === 'easy' ? 5 : difficulty === 'medium' ? 7 : 12;
-    
-    const words = [];
-    for (let i = 0; i < wordCount; i++) {
-        if (Math.random() < 0.7 && commonWords.length > 0) {
-            words.push(commonWords[Math.floor(Math.random() * commonWords.length)]);
-        } else {
-            words.push(generateRandomWord('abcdefghijklmnopqrstuvwxyz', minWordLen, maxWordLen));
-        }
-    }
-    return words.join(' ');
-}
-
-// DATA
 const LESSONS = [
-    { id: 0, title: "Home row", keys: "asdf jkl;", skill: "home", goal: 20 },
-    { id: 1, title: "Add G & H", keys: "asdf ghjkl;", skill: "home", goal: 22 },
-    { id: 2, title: "Top row E R", keys: "asdfer jkl;", skill: "top", goal: 22 },
-    { id: 3, title: "Top row W O", keys: "asdfw ojkl;", skill: "top", goal: 24 },
-    { id: 4, title: "Full top row", keys: "qwertyuiop", skill: "top", goal: 26 },
-    { id: 5, title: "Bottom row", keys: "zxcvbnm", skill: "bot", goal: 24 },
-    { id: 6, title: "Full alphabet", keys: "abcdefghijklmnopqrstuvwxyz", skill: "bot", goal: 28 },
-    { id: 7, title: "Numbers", keys: "1234567890", skill: "num", goal: 22 },
-    { id: 8, title: "Speed burst", keys: "abcdefghijklmnopqrstuvwxyz", skill: "home", goal: 35 },
+    { id: 1, title: 'Home Row Basics', keys: ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'], done: true },
+    { id: 2, title: 'Home Row Practice', keys: ['a', 's', 'd', 'f', 'j', 'k', 'l'], done: true },
+    { id: 3, title: 'Add: G & H', keys: ['g', 'h'], done: true },
+    { id: 4, title: 'Review Home Row', keys: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'], done: true },
+    { id: 5, title: 'Upper Row: E & I', keys: ['e', 'i'], done: false, current: true },
+    { id: 6, title: 'Upper Row: R & U', keys: ['r', 'u'], done: false },
+    { id: 7, title: 'Upper Row: T & Y', keys: ['t', 'y'], done: false },
+    { id: 8, title: 'Upper Row: W & O', keys: ['w', 'o'], done: false },
+    { id: 9, title: 'Upper Row: Q & P', keys: ['q', 'p'], done: false },
+    { id: 10, title: 'Review Upper Row', keys: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'], done: false },
+    { id: 11, title: 'Lower Row: V & M', keys: ['v', 'm'], done: false },
+    { id: 12, title: 'Lower Row: C & ,', keys: ['c', ','], done: false },
+    { id: 13, title: 'Lower Row: X & .', keys: ['x', '.'], done: false },
+    { id: 14, title: 'Lower Row: Z & /', keys: ['z', '/'], done: false },
+    { id: 15, title: 'Review Lower Row', keys: ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'], done: false },
+    { id: 16, title: 'Numbers: 4 & 7', keys: ['4', '7'], done: false },
+    { id: 17, title: 'Numbers: 3 & 8', keys: ['3', '8'], done: false },
+    { id: 18, title: 'Numbers: 2 & 9', keys: ['2', '9'], done: false },
+    { id: 19, title: 'Numbers: 1 & 0', keys: ['1', '0'], done: false },
+    { id: 20, title: 'Review Numbers', keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], done: false },
+    { id: 21, title: 'Shift: Capitals A-F', keys: ['A', 'S', 'D', 'F', 'G'], done: false },
+    { id: 22, title: 'Shift: Capitals J-L', keys: ['J', 'K', 'L'], done: false },
+    { id: 23, title: 'Shift: Upper Caps', keys: ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'], done: false },
+    { id: 24, title: 'Shift: Lower Caps', keys: ['Z', 'X', 'C', 'V', 'B', 'N', 'M'], done: false },
+    { id: 25, title: 'Common Words I', keys: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'e', 'i', 'r', 'u'], done: false },
+    { id: 26, title: 'Common Words II', keys: ['t', 'y', 'w', 'o', 'q', 'p', 'v', 'm', 'c', 'n', 'b'], done: false },
+    { id: 27, title: 'Full Keyboard', keys: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'], done: false },
 ];
 
-// STATE
-let S = {
-    xp: 0, bestWPM: 0, wpmHistory: [], testCount: 0,
-    completedLessons: new Set(),
-    currentLesson: -1, currentMode: 'learn',
-    learnKeyIdx: 0,
-    repeatBoxes: [], repeatIdx: 0, repeatKey: '',
-    wordsArr: [], wordIdx: 0, wordsStart: null, wordsTimer: null,
-    wordsCorrect: 0, wordsErrors: 0, wordsCombo: 0,
-    practiceWords: [], practiceIdx: 0, practiceStart: null, practiceCombo: 0, practiceCorrect: 0,
-    testWords: [], testIdx: 0, testStart: null, testTimer: null, testTimeLeft: 60, testStarted: false, testCorrect: 0
+const KEYBOARD_LAYOUT = [
+    ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '⌫'],
+    ['⇥', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+    ['⇪', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '↩'],
+    ['⇧', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '⇧'],
+    ['fn', '⌃', '⌥', '⌘', ' ', '⌘', '⌥', '◀', '▲', '▼', '▶'],
+];
+
+const KEY_WIDTHS = {
+    '⌫': 'kw-175', '⇥': 'kw-15', '\\': 'kw-175', '⇪': 'kw-2', '↩': 'kw-225',
+    '⇧': 'kw-275', 'fn': 'kw-15', '⌃': 'kw-15', '⌥': 'kw-15', '⌘': 'kw-2',
+    ' ': 'kw-sp',
 };
 
-// KEYBOARD BUILDER
-const KB_ROWS = [['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '⌫'], ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'], ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '↵'], ['⇧', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '⇧'], ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl']];
-const WIDE = ['⌫', 'Tab', 'Caps', '↵']; const WIDER = ['⇧']; const SPACE = ['Space'];
+const FINGER_MAP = {
+    '`': 'lp', '1': 'lp', '2': 'lr', '3': 'lm', '4': 'li', '5': 'li',
+    '6': 'ri', '7': 'ri', '8': 'rm', '9': 'rr', '0': 'rp', '-': 'rp', '=': 'rp',
+    'q': 'lp', 'w': 'lr', 'e': 'lm', 'r': 'li', 't': 'li',
+    'y': 'ri', 'u': 'ri', 'i': 'rm', 'o': 'rr', 'p': 'rp', '[': 'rp', ']': 'rp', '\\': 'rp',
+    'a': 'lp', 's': 'lr', 'd': 'lm', 'f': 'li', 'g': 'li',
+    'h': 'ri', 'j': 'ri', 'k': 'rm', 'l': 'rr', ';': 'rp', "'": 'rp',
+    'z': 'lp', 'x': 'lr', 'c': 'lm', 'v': 'li', 'b': 'li',
+    'n': 'ri', 'm': 'ri', ',': 'rm', '.': 'rr', '/': 'rp',
+    ' ': 'th', '⌘': 'th', '⌥': 'th', '⌃': 'th', 'fn': 'lp',
+    '⇥': 'lp', '⇪': 'lp', '⇧': 'lp', '⌫': 'rp', '↩': 'rp',
+};
 
-function buildKB(id, highlight = []) {
-    const c = document.getElementById(id); if (!c) return;
-    c.innerHTML = '';
-    KB_ROWS.forEach(row => {
-        const div = document.createElement('div'); div.className = 'kb-row';
-        row.forEach(k => {
-            const el = document.createElement('div'); el.className = 'key';
-            if (WIDE.includes(k)) el.classList.add('wide');
-            if (WIDER.includes(k)) el.classList.add('wider');
-            if (SPACE.includes(k)) el.classList.add('space');
-            el.textContent = k; el.dataset.k = k.toLowerCase();
-            const kl = k.toLowerCase();
-            if (highlight.some(h => h === kl || (k === 'Space' && h === ' '))) { el.classList.add('hl'); }
-            div.appendChild(el);
-        });
-        c.appendChild(div);
+// Maps finger code → CSS variable
+const FINGER_COLORS = {
+    'lp': 'var(--f-lp)', 'lr': 'var(--f-lr)', 'lm': 'var(--f-lm)', 'li': 'var(--f-li)',
+    'ri': 'var(--f-ri)', 'rm': 'var(--f-rm)', 'rr': 'var(--f-rr)', 'rp': 'var(--f-rp)',
+    'th': 'var(--f-th)',
+};
+
+// Word banks for text generation
+const WORD_BANKS = {
+    home: ['ask', 'dad', 'fall', 'add', 'slag', 'flash', 'glad', 'flask', 'hall', 'lad', 'flag', 'lass', 'glass'],
+    upper: ['ripe', 'tire', 'wire', 'euro', 'tour', 'your', 'poet', 'quit', 'wipe', 'trio', 'pour', 'rope'],
+    lower: ['verb', 'cave', 'move', 'zinc', 'flex', 'vibe', 'vent', 'corn', 'comb', 'dove', 'civic', 'exam'],
+    common: ['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her', 'was', 'one', 'our', 'out',
+        'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who'],
+    full: ['quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog', 'pack', 'my', 'box', 'with', 'five', 'dozen',
+        'liquor', 'jugs', 'how', 'vexingly', 'bright', 'quiz', 'gawked', 'jumbo', 'sphinx'],
+};
+
+// ============================================
+// STATE
+// ============================================
+let state = {
+    currentView: 'learn',
+    currentLesson: null,
+    currentLessonIdx: 4,  // 0-based; lesson 5 default
+
+    // typing state
+    typingText: '',
+    typedInput: '',
+    charStates: [],       // 'pending' | 'correct' | 'wrong'
+    cursorIdx: 0,
+
+    // timing
+    startTime: null,
+    timerHandle: null,
+    elapsedSeconds: 0,
+
+    // counts
+    totalKeystrokes: 0,
+    correctKeystrokes: 0,
+
+    // settings
+    showKeyboard: true,
+    showHands: true,
+    colorFingers: true,
+    soundEnabled: false,
+};
+
+// ============================================
+// DOM REFS
+// ============================================
+const $ = id => document.getElementById(id);
+
+const DOM = {
+    views: document.querySelectorAll('.view'),
+    navPills: document.querySelectorAll('.nav-pill'),
+    langItems: document.querySelectorAll('.lang-item'),
+    lessonsGrid: $('lessons-grid'),
+    keyboard: $('keyboard'),
+    typingBox: $('typing-box'),
+    typingText: $('typing-text'),
+    hiddenInput: $('hidden-input'),
+    typingHint: $('typing-hint'),
+    statWpm: $('stat-wpm'),
+    statAcc: $('stat-acc'),
+    statTime: $('stat-time'),
+    statChars: $('stat-chars'),
+    lessonBadge: $('lesson-badge'),
+    lessonNameSm: $('lesson-name-sm'),
+    backBtn: $('back-btn'),
+    restartBtn: $('restart-btn'),
+    prevBtn: $('prev-lesson-btn'),
+    nextBtn: $('next-lesson-btn'),
+    handsRow: $('hands-row'),
+    leftHandSvg: $('left-hand-svg'),
+    rightHandSvg: $('right-hand-svg'),
+    modalOverlay: $('modal-overlay'),
+    modalWpm: $('modal-wpm'),
+    modalAcc: $('modal-acc'),
+    modalTime: $('modal-time'),
+    modalRetry: $('modal-retry'),
+    modalNext: $('modal-next'),
+    progressFill: $('progress-fill'),
+    progressPct: $('progress-pct'),
+    progressLessons: $('progress-lessons'),
+    toggleKeyboard: $('toggle-keyboard'),
+    toggleHands: $('toggle-hands'),
+    toggleColors: $('toggle-colors'),
+    toggleSound: $('toggle-sound'),
+};
+
+// ============================================
+// NAVIGATION
+// ============================================
+function showView(viewName) {
+    state.currentView = viewName;
+    DOM.views.forEach(v => v.classList.remove('active'));
+    const target = document.getElementById(`view-${viewName}`);
+    if (target) target.classList.add('active');
+
+    DOM.navPills.forEach(p => {
+        p.classList.toggle('active', p.dataset.view === viewName);
     });
 }
 
-function pressKB(id, key) {
-    const c = document.getElementById(id); if (!c) return;
-    c.querySelectorAll('.key').forEach(el => {
-        if (el.dataset.k === key || (key === ' ' && el.textContent === 'Space')) {
-            el.classList.add('pressed');
-            setTimeout(() => el.classList.remove('pressed'), 120);
-        }
+DOM.navPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+        const v = pill.dataset.view;
+        if (v === 'learn' || v === 'settings') showView(v);
     });
-}
+});
 
-// FINGER GUIDE
-const FINGER_MAP = { 'a': { hand: 'left', row: 2, col: 1 }, 's': { hand: 'left', row: 2, col: 2 }, 'd': { hand: 'left', row: 2, col: 3 }, 'f': { hand: 'left', row: 2, col: 4 }, 'g': { hand: 'left', row: 2, col: 5 }, 'q': { hand: 'left', row: 1, col: 1 }, 'w': { hand: 'left', row: 1, col: 2 }, 'e': { hand: 'left', row: 1, col: 3 }, 'r': { hand: 'left', row: 1, col: 4 }, 't': { hand: 'left', row: 1, col: 5 }, 'z': { hand: 'left', row: 3, col: 1 }, 'x': { hand: 'left', row: 3, col: 2 }, 'c': { hand: 'left', row: 3, col: 3 }, 'v': { hand: 'left', row: 3, col: 4 }, 'b': { hand: 'left', row: 3, col: 5 }, 'h': { hand: 'right', row: 2, col: 1 }, 'j': { hand: 'right', row: 2, col: 2 }, 'k': { hand: 'right', row: 2, col: 3 }, 'l': { hand: 'right', row: 2, col: 4 }, ';': { hand: 'right', row: 2, col: 5 }, 'y': { hand: 'right', row: 1, col: 1 }, 'u': { hand: 'right', row: 1, col: 2 }, 'i': { hand: 'right', row: 1, col: 3 }, 'o': { hand: 'right', row: 1, col: 4 }, 'p': { hand: 'right', row: 1, col: 5 }, 'n': { hand: 'right', row: 3, col: 1 }, 'm': { hand: 'right', row: 3, col: 2 }, ',': { hand: 'right', row: 3, col: 3 }, '.': { hand: 'right', row: 3, col: 4 }, '/': { hand: 'right', row: 3, col: 5 } };
-const FINGER_NAMES = { left: { 1: 'pinky', 2: 'ring', 3: 'middle', 4: 'index', 5: 'index' }, right: { 1: 'index', 2: 'index', 3: 'middle', 4: 'ring', 5: 'pinky' } };
+DOM.backBtn.addEventListener('click', () => {
+    stopTimer();
+    showView('learn');
+});
 
-function getFingerInstruction(key) {
-    const k = key.toLowerCase();
-    const info = FINGER_MAP[k];
-    if (!info) return `Press the <span class="key-chip">${key.toUpperCase()}</span> key`;
-    const fname = FINGER_NAMES[info.hand][info.col];
-    return `Press the <span class="key-chip">${key.toUpperCase()}</span> key using your ${info.hand} ${fname} finger`;
-}
-
+// ============================================
 // LESSON GRID
+// ============================================
 function buildLessonGrid() {
-    const g = document.getElementById('lesson-grid'); g.innerHTML = '';
-    LESSONS.forEach((l, i) => {
-        const d = document.createElement('div');
-        d.className = 'lcard' + (S.completedLessons.has(i) ? ' done' : '');
-        d.innerHTML = `<div class="lcard-num">Lesson ${i + 1}</div><div class="lcard-title">${l.title}</div><div class="lcard-keys">${l.keys}</div><div class="lcard-bar"><div class="lcard-bar-fill" style="width:${S.completedLessons.has(i) ? 100 : 0}%"></div></div>`;
-        d.onclick = () => startLesson(i);
-        g.appendChild(d);
+    DOM.lessonsGrid.innerHTML = '';
+    const doneCount = LESSONS.filter(l => l.done).length;
+    const pct = Math.round((doneCount / LESSONS.length) * 100);
+
+    DOM.progressFill.style.width = pct + '%';
+    DOM.progressPct.textContent = pct + '%';
+    DOM.progressLessons.textContent = `${doneCount} / ${LESSONS.length} lessons`;
+
+    LESSONS.forEach((lesson, idx) => {
+        const card = document.createElement('button');
+        card.className = 'lesson-card' +
+            (lesson.done ? ' done-lesson' : '') +
+            (lesson.current ? ' active-lesson' : '');
+
+        const statusClass = lesson.done ? 'status-done' : lesson.current ? 'status-current' : 'status-locked';
+        const keysHtml = lesson.keys.slice(0, 6).map(k =>
+            `<span class="key-chip">${k.toUpperCase()}</span>`
+        ).join('') + (lesson.keys.length > 6 ? `<span class="key-chip">+${lesson.keys.length - 6}</span>` : '');
+
+        card.innerHTML = `
+      <div class="card-top">
+        <span class="card-num">Lesson ${lesson.id}</span>
+        <span class="card-status ${statusClass}"></span>
+      </div>
+      <div class="card-title">${lesson.title}</div>
+      <div class="card-keys">${keysHtml}</div>
+    `;
+        card.style.animationDelay = `${idx * 0.03}s`;
+        card.addEventListener('click', () => launchLesson(idx));
+        DOM.lessonsGrid.appendChild(card);
     });
 }
 
-// START LESSON
-function startLesson(idx) {
-    S.currentLesson = idx;
-    document.getElementById('lesson-list').style.display = 'none';
-    document.getElementById('lesson-area').style.display = 'block';
-    document.getElementById('lesson-heading').textContent = `Lesson ${idx + 1}: ${LESSONS[idx].title}`;
-    setMode('learn', document.querySelectorAll('.mode-tab')[0]);
+// ============================================
+// LAUNCH LESSON
+// ============================================
+function launchLesson(lessonIdx) {
+    const lesson = LESSONS[lessonIdx];
+    state.currentLesson = lesson;
+    state.currentLessonIdx = lessonIdx;
+
+    DOM.lessonBadge.textContent = `Lesson ${lesson.id}`;
+    DOM.lessonNameSm.textContent = lesson.title;
+
+    generateTypingText(lesson);
+    resetTypingState();
+    buildKeyboard();
+    renderHands(null);
+    showView('typing');
+
+    setTimeout(() => {
+        DOM.typingBox.focus();
+        DOM.hiddenInput.focus();
+        DOM.typingHint.classList.add('visible');
+    }, 100);
 }
 
-function closeLesson() {
-    document.getElementById('lesson-area').style.display = 'none';
-    document.getElementById('lesson-list').style.display = 'block';
-    clearInterval(S.wordsTimer);
+// ============================================
+// TEXT GENERATION
+// ============================================
+function generateTypingText(lesson) {
+    const letters = lesson.keys.filter(k => /^[a-zA-Z]$/.test(k)).map(k => k.toLowerCase());
+    const specials = lesson.keys.filter(k => /^[^a-zA-Z]$/.test(k));
+    const allKeys = [...letters];
+
+    let pool = [];
+
+    if (letters.length > 0) {
+        // Generate pseudo-words from the lesson keys
+        const wordCount = 50;
+        for (let i = 0; i < wordCount; i++) {
+            const len = 2 + Math.floor(Math.random() * 5);
+            let word = '';
+            for (let j = 0; j < len; j++) {
+                word += letters[Math.floor(Math.random() * letters.length)];
+            }
+            pool.push(word);
+        }
+        // Sprinkle in specials if any
+        if (specials.length > 0) {
+            for (let i = 0; i < 8; i++) {
+                pool.splice(Math.floor(Math.random() * pool.length), 0, specials[Math.floor(Math.random() * specials.length)]);
+            }
+        }
+    } else {
+        // Number or special only lesson
+        for (let i = 0; i < 60; i++) {
+            pool.push(allKeys[Math.floor(Math.random() * allKeys.length)]);
+        }
+    }
+
+    // Shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    state.typingText = pool.slice(0, 45).join(' ');
+}
+
+// ============================================
+// TYPING STATE RESET
+// ============================================
+function resetTypingState() {
+    stopTimer();
+    state.typedInput = '';
+    state.charStates = state.typingText.split('').map(() => 'pending');
+    state.cursorIdx = 0;
+    state.startTime = null;
+    state.elapsedSeconds = 0;
+    state.totalKeystrokes = 0;
+    state.correctKeystrokes = 0;
+
+    DOM.statWpm.textContent = '0';
+    DOM.statAcc.textContent = '100%';
+    DOM.statTime.textContent = '0s';
+    DOM.statChars.textContent = '0';
+
+    renderTypingText();
+}
+
+// ============================================
+// RENDER TYPING TEXT
+// ============================================
+function renderTypingText() {
+    const container = DOM.typingText;
+    container.innerHTML = '';
+
+    for (let i = 0; i < state.typingText.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'char';
+        const ch = state.typingText[i];
+
+        if (i < state.cursorIdx) {
+            span.classList.add(state.charStates[i]);
+        } else if (i === state.cursorIdx) {
+            span.classList.add('pending', 'cursor');
+        } else {
+            span.classList.add('pending');
+        }
+
+        // Space gets a middle dot for visibility when wrong
+        if (ch === ' ' && state.charStates[i] === 'wrong') {
+            span.textContent = '·';
+        } else if (ch === ' ') {
+            span.innerHTML = '&nbsp;';
+        } else {
+            span.textContent = ch;
+        }
+
+        container.appendChild(span);
+    }
+
+    // Auto-scroll cursor into view
+    const cursor = container.querySelector('.cursor');
+    if (cursor) {
+        cursor.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+
+    // Highlight the next key on keyboard
+    const nextChar = state.typingText[state.cursorIdx];
+    if (nextChar !== undefined) {
+        highlightKey(nextChar.toLowerCase());
+        renderHands(nextChar.toLowerCase());
+    } else {
+        highlightKey(null);
+        renderHands(null);
+    }
+}
+
+// ============================================
+// INPUT HANDLING
+// ============================================
+DOM.typingBox.addEventListener('click', () => {
+    DOM.hiddenInput.focus();
+    DOM.typingHint.classList.remove('visible');
+    DOM.typingBox.classList.add('has-focus');
+});
+
+DOM.hiddenInput.addEventListener('focus', () => {
+    DOM.typingBox.classList.add('has-focus');
+    DOM.typingHint.classList.remove('visible');
+});
+
+DOM.hiddenInput.addEventListener('blur', () => {
+    DOM.typingBox.classList.remove('has-focus');
+    if (state.cursorIdx === 0) DOM.typingHint.classList.add('visible');
+});
+
+DOM.hiddenInput.addEventListener('keydown', (e) => {
+    // Block browser shortcuts that interfere
+    if (e.key === 'Tab') { e.preventDefault(); return; }
+
+    if (e.key === 'Backspace') {
+        e.preventDefault();
+        handleBackspace();
+        return;
+    }
+});
+
+DOM.hiddenInput.addEventListener('input', (e) => {
+    const val = DOM.hiddenInput.value;
+    if (!val) return;
+    DOM.hiddenInput.value = '';
+
+    const ch = val[val.length - 1]; // last char typed
+    handleChar(ch);
+});
+
+function handleChar(ch) {
+    if (state.cursorIdx >= state.typingText.length) return;
+
+    // Start timer on first keypress
+    if (!state.startTime) {
+        state.startTime = Date.now();
+        state.timerHandle = setInterval(tickTimer, 500);
+    }
+
+    DOM.typingHint.classList.remove('visible');
+
+    const expected = state.typingText[state.cursorIdx];
+    state.totalKeystrokes++;
+
+    if (ch === expected) {
+        state.charStates[state.cursorIdx] = 'correct';
+        state.correctKeystrokes++;
+        flashKey(expected.toLowerCase(), true);
+    } else {
+        state.charStates[state.cursorIdx] = 'wrong';
+        flashKey(expected.toLowerCase(), false);
+        // Also flash the key they actually pressed
+        if (ch !== expected) flashKey(ch.toLowerCase(), false);
+    }
+
+    state.cursorIdx++;
+    updateStats();
+    renderTypingText();
+
+    // Check completion
+    if (state.cursorIdx >= state.typingText.length) {
+        stopTimer();
+        setTimeout(showCompletionModal, 350);
+    }
+}
+
+function handleBackspace() {
+    if (state.cursorIdx === 0) return;
+    state.cursorIdx--;
+    state.charStates[state.cursorIdx] = 'pending';
+    renderTypingText();
+}
+
+// ============================================
+// TIMER
+// ============================================
+function tickTimer() {
+    if (!state.startTime) return;
+    state.elapsedSeconds = Math.round((Date.now() - state.startTime) / 1000);
+    DOM.statTime.textContent = state.elapsedSeconds + 's';
+    updateWpm();
+}
+
+function stopTimer() {
+    if (state.timerHandle) {
+        clearInterval(state.timerHandle);
+        state.timerHandle = null;
+    }
+}
+
+function updateWpm() {
+    if (!state.startTime) return;
+    const mins = (Date.now() - state.startTime) / 60000;
+    if (mins < 0.01) return;
+    const words = state.correctKeystrokes / 5;
+    const wpm = Math.round(words / mins);
+    DOM.statWpm.textContent = wpm;
+}
+
+function updateStats() {
+    // WPM
+    if (state.startTime) {
+        const mins = (Date.now() - state.startTime) / 60000;
+        if (mins > 0.01) {
+            const words = state.correctKeystrokes / 5;
+            DOM.statWpm.textContent = Math.round(words / mins);
+        }
+    }
+    // Accuracy
+    const acc = state.totalKeystrokes > 0
+        ? Math.round((state.correctKeystrokes / state.totalKeystrokes) * 100)
+        : 100;
+    DOM.statAcc.textContent = acc + '%';
+    // Chars
+    DOM.statChars.textContent = state.cursorIdx;
+}
+
+// ============================================
+// KEYBOARD BUILDER
+// ============================================
+function buildKeyboard() {
+    DOM.keyboard.innerHTML = '';
+    const colorize = state.colorFingers;
+
+    KEYBOARD_LAYOUT.forEach(rowKeys => {
+        const row = document.createElement('div');
+        row.className = 'kb-row';
+
+        rowKeys.forEach(k => {
+            const el = document.createElement('div');
+            const w = KEY_WIDTHS[k] || 'kw-1';
+            el.className = `key ${w}`;
+            el.dataset.key = k.toLowerCase();
+
+            const finger = FINGER_MAP[k.toLowerCase()];
+            if (finger && colorize) {
+                const dot = document.createElement('div');
+                dot.className = 'finger-dot';
+                dot.style.background = FINGER_COLORS[finger];
+                el.appendChild(dot);
+            }
+
+            const label = document.createElement('span');
+            label.textContent = k;
+            el.appendChild(label);
+            row.appendChild(el);
+        });
+
+        DOM.keyboard.appendChild(row);
+    });
+}
+
+function highlightKey(ch) {
+    // Clear existing highlights
+    document.querySelectorAll('.key.highlight').forEach(k => k.classList.remove('highlight'));
+    if (!ch) return;
+
+    const keyEl = document.querySelector(`.key[data-key="${CSS.escape(ch)}"]`);
+    if (keyEl) keyEl.classList.add('highlight');
+}
+
+function flashKey(ch, correct) {
+    const keyEl = document.querySelector(`.key[data-key="${CSS.escape(ch)}"]`);
+    if (!keyEl) return;
+
+    const cls = correct ? 'pressed-ok' : 'pressed-err';
+    keyEl.classList.add(cls);
+    setTimeout(() => keyEl.classList.remove(cls), 180);
+}
+
+// ============================================
+// HAND SVG DIAGRAM
+// ============================================
+// Finger positions [cx, tip-y, base-y, width] for each hand
+const LEFT_FINGERS = [
+    { id: 'lp', cx: 22, ty: 18, by: 110, w: 18, label: 'Pinky' },
+    { id: 'lr', cx: 48, ty: 10, by: 115, w: 18, label: 'Ring' },
+    { id: 'lm', cx: 74, ty: 5, by: 118, w: 18, label: 'Middle' },
+    { id: 'li', cx: 100, ty: 12, by: 115, w: 18, label: 'Index' },
+    { id: 'th', cx: 128, ty: 60, by: 145, w: 18, label: 'Thumb' },
+];
+const RIGHT_FINGERS = [
+    { id: 'th', cx: 32, ty: 60, by: 145, w: 18, label: 'Thumb' },
+    { id: 'ri', cx: 60, ty: 12, by: 115, w: 18, label: 'Index' },
+    { id: 'rm', cx: 86, ty: 5, by: 118, w: 18, label: 'Middle' },
+    { id: 'rr', cx: 112, ty: 10, by: 115, w: 18, label: 'Ring' },
+    { id: 'rp', cx: 138, ty: 18, by: 110, w: 18, label: 'Pinky' },
+];
+
+function buildHandSvg(svgEl, fingers, activeFingerId) {
+    svgEl.innerHTML = '';
+
+    // Palm
+    const palm = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    palm.setAttribute('x', '10');
+    palm.setAttribute('y', '110');
+    palm.setAttribute('width', '140');
+    palm.setAttribute('height', '75');
+    palm.setAttribute('rx', '18');
+    palm.setAttribute('fill', 'var(--surface)');
+    palm.setAttribute('stroke', 'var(--border2)');
+    palm.setAttribute('stroke-width', '1.5');
+    svgEl.appendChild(palm);
+
+    fingers.forEach(f => {
+        const isActive = f.id === activeFingerId;
+        const color = isActive ? FINGER_COLORS[f.id] : 'var(--surface)';
+        const strokeColor = isActive ? FINGER_COLORS[f.id] : 'var(--border2)';
+
+        // Finger body
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', f.cx - f.w / 2);
+        rect.setAttribute('y', f.ty);
+        rect.setAttribute('width', f.w);
+        rect.setAttribute('height', f.by - f.ty);
+        rect.setAttribute('rx', f.w / 2);
+        rect.setAttribute('fill', color);
+        rect.setAttribute('stroke', strokeColor);
+        rect.setAttribute('stroke-width', '1.5');
+        rect.style.transition = 'fill 0.15s, stroke 0.15s';
+
+        // Fingertip glow when active
+        if (isActive) {
+            const glow = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            glow.setAttribute('x', f.cx - f.w / 2 - 2);
+            glow.setAttribute('y', f.ty - 2);
+            glow.setAttribute('width', f.w + 4);
+            glow.setAttribute('height', f.w + 4);
+            glow.setAttribute('rx', (f.w + 4) / 2);
+            glow.setAttribute('fill', FINGER_COLORS[f.id]);
+            glow.setAttribute('opacity', '0.25');
+            svgEl.appendChild(glow);
+        }
+
+        svgEl.appendChild(rect);
+
+        // Knuckle lines
+        [0.4, 0.65].forEach(frac => {
+            const y = f.ty + (f.by - f.ty) * frac;
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', f.cx - f.w / 2 + 2);
+            line.setAttribute('y1', y);
+            line.setAttribute('x2', f.cx + f.w / 2 - 2);
+            line.setAttribute('y2', y);
+            line.setAttribute('stroke', isActive ? 'rgba(0,0,0,0.25)' : 'var(--border)');
+            line.setAttribute('stroke-width', '1');
+            svgEl.appendChild(line);
+        });
+    });
+}
+
+function renderHands(activeKey) {
+    if (!state.showHands) {
+        DOM.handsRow.style.display = 'none';
+        return;
+    }
+    DOM.handsRow.style.display = 'flex';
+
+    const finger = activeKey ? FINGER_MAP[activeKey] : null;
+    buildHandSvg(DOM.leftHandSvg, LEFT_FINGERS, finger);
+    buildHandSvg(DOM.rightHandSvg, RIGHT_FINGERS, finger);
+}
+
+// ============================================
+// COMPLETION MODAL
+// ============================================
+function showCompletionModal() {
+    const mins = state.startTime ? (Date.now() - state.startTime) / 60000 : 0;
+    const wpm = mins > 0 ? Math.round((state.correctKeystrokes / 5) / mins) : 0;
+    const acc = state.totalKeystrokes > 0
+        ? Math.round((state.correctKeystrokes / state.totalKeystrokes) * 100) : 100;
+
+    DOM.modalWpm.textContent = wpm;
+    DOM.modalAcc.textContent = acc + '%';
+    DOM.modalTime.textContent = state.elapsedSeconds + 's';
+    DOM.modalOverlay.classList.add('open');
+
+    // Mark lesson done
+    LESSONS[state.currentLessonIdx].done = true;
+    LESSONS[state.currentLessonIdx].current = false;
+    if (state.currentLessonIdx + 1 < LESSONS.length) {
+        LESSONS[state.currentLessonIdx + 1].current = true;
+    }
     buildLessonGrid();
 }
 
-function retryLesson() { startLesson(S.currentLesson); }
-function nextLesson() {
-    const n = S.currentLesson + 1;
-    if (n < LESSONS.length) startLesson(n); else closeLesson();
-}
-
-// MODES
-function setMode(mode, btn) {
-    S.currentMode = mode;
-    document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    ['learn', 'repeat', 'words'].forEach(m => {
-        document.getElementById('mode-' + m).style.display = m === mode ? 'block' : 'none';
-    });
-    clearInterval(S.wordsTimer);
-    if (mode === 'learn') initLearn();
-    if (mode === 'repeat') initRepeat();
-    if (mode === 'words') initWords();
-}
-
-// LEARN MODE
-function initLearn() {
-    const l = LESSONS[S.currentLesson];
-    const keys = l.keys.replace(/\s/g, '').split('');
-    const unique = [...new Set(keys)];
-    S.learnKeyIdx = 0;
-    buildLearnDots(unique.length);
-    showLearnKey(unique, 0);
-
-    document.addEventListener('keydown', learnKeyHandler);
-}
-
-function buildLearnDots(n) {
-    const c = document.getElementById('learn-dots'); c.innerHTML = '';
-    for (let i = 0; i < Math.min(n, 8); i++) {
-        const d = document.createElement('div'); d.className = 'pdot' + (i === 0 ? ' active' : ''); d.id = 'pdot-' + i; c.appendChild(d);
-    }
-}
-
-function showLearnKey(keys, idx) {
-    if (idx >= keys.length) { document.removeEventListener('keydown', learnKeyHandler); return; }
-    const k = keys[idx];
-    document.getElementById('learn-key-title').textContent = `Learn: ${k}`;
-    document.getElementById('learn-instruction').innerHTML = getFingerInstruction(k);
-    buildKB('learn-kb', [k.toLowerCase()]);
-    // update dots
-    document.querySelectorAll('.pdot').forEach((d, i) => {
-        d.className = 'pdot' + (i === idx ? ' active' : i < idx ? ' done' : '');
-    });
-    S.learnCurrentKey = k;
-    S.learnKeys = keys;
-    S.learnKeyIdx = idx;
-
-    const learnOnKey = (e) => {
-        if (e.key.toLowerCase() === k.toLowerCase() || (k === ' ' && e.key === ' ')) {
-            pressKB('learn-kb', k.toLowerCase());
-            document.removeEventListener('keydown', learnOnKey);
-            setTimeout(() => showLearnKey(keys, idx + 1), 300);
-        }
-    };
-    document.addEventListener('keydown', learnOnKey);
-    window._learnKeyHandler = learnOnKey;
-}
-
-function learnKeyHandler() { }
-
-// REPEAT MODE
-function initRepeat() {
-    const l = LESSONS[S.currentLesson];
-    const keys = l.keys.replace(/\s/g, '').split('');
-    const unique = [...new Set(keys)];
-    // pick a key to repeat
-    const k = unique[Math.floor(Math.random() * unique.length)];
-    S.repeatKey = k;
-    S.repeatBoxes = Array(6).fill(null);
-    S.repeatIdx = 0;
-
-    renderRepeatBoxes();
-    buildKB('repeat-kb', [k.toLowerCase()]);
-    document.getElementById('repeat-input').value = '';
-    document.getElementById('repeat-input').focus();
-}
-
-function renderRepeatBoxes() {
-    const c = document.getElementById('repeat-boxes'); c.innerHTML = '';
-    S.repeatBoxes.forEach((v, i) => {
-        const el = document.createElement('div');
-        el.className = 'rbox';
-        if (i === S.repeatIdx) el.classList.add('current');
-        if (v === 'correct') el.classList.add('done');
-        if (v === 'wrong') el.classList.add('wrong');
-        el.textContent = v ? S.repeatKey.toUpperCase() : S.repeatKey.toUpperCase();
-        if (i > S.repeatIdx && v === null) el.style.color = 'var(--text3)';
-        c.appendChild(el);
-    });
-}
-
-document.addEventListener('input', e => {
-    if (e.target.id === 'repeat-input') {
-        const v = e.target.value;
-        if (!v) return;
-        const correct = v.toLowerCase() === S.repeatKey.toLowerCase();
-        S.repeatBoxes[S.repeatIdx] = correct ? 'correct' : 'wrong';
-        pressKB('repeat-kb', v.toLowerCase());
-        renderRepeatBoxes();
-        e.target.value = '';
-        if (correct) S.repeatIdx++;
-        if (S.repeatIdx >= 6) {
-            const all = S.repeatBoxes.every(b => b === 'correct');
-            setTimeout(() => {
-                if (all) initRepeat(); else { S.repeatIdx = 0; S.repeatBoxes = Array(6).fill(null); renderRepeatBoxes(); }
-            }, 400);
-        }
-    }
-
-    if (e.target.id === 'words-input') handleWordsInput(e.target);
-    if (e.target.id === 'practice-input') handlePracticeInput(e.target);
-    if (e.target.id === 'test-input') handleTestInput(e.target);
+DOM.modalRetry.addEventListener('click', () => {
+    DOM.modalOverlay.classList.remove('open');
+    restartLesson();
 });
 
-// WORDS MODE
-function initWords() {
-    const l = LESSONS[S.currentLesson];
-    const generatedWords = generateWordsForLesson(l.keys, 12);
-    S.wordsArr = generatedWords.trim().split(/\s+/);
-    S.wordIdx = 0; S.wordsStart = null; S.wordsCorrect = 0; S.wordsErrors = 0; S.wordsCombo = 0;
-    clearInterval(S.wordsTimer);
-    renderWords();
-    document.getElementById('words-input').value = '';
-    document.getElementById('words-input').focus();
-    document.getElementById('w-wpm').textContent = '0';
-    document.getElementById('w-acc').textContent = '100%';
-    document.getElementById('w-combo').textContent = '0';
-    document.getElementById('w-time').textContent = '0s';
-}
-
-function renderWords() {
-    const c = document.getElementById('words-display');
-    c.innerHTML = S.wordsArr.map((w, i) => {
-        if (i < S.wordIdx) return `<span class="w-correct">${w}</span>`;
-        if (i === S.wordIdx) return `<span class="w-cur">${w}</span>`;
-        return `<span>${w}</span>`;
-    }).join(' ');
-}
-
-function handleWordsInput(inp) {
-    const v = inp.value;
-    if (!S.wordsStart && v.length > 0) {
-        S.wordsStart = Date.now();
-        S.wordsTimer = setInterval(() => {
-            const s = Math.round((Date.now() - S.wordsStart) / 1000);
-            document.getElementById('w-time').textContent = s + 's';
-            document.getElementById('w-wpm').textContent = calcWPM(S.wordsCorrect, Date.now() - S.wordsStart);
-        }, 500);
-    }
-    if (v.endsWith(' ')) {
-        const typed = v.trim();
-        const target = S.wordsArr[S.wordIdx];
-        if (typed === target) { S.wordsCorrect += typed.length + 1; S.wordsCombo++; }
-        else { S.wordsErrors++; S.wordsCombo = 0; }
-        document.getElementById('w-acc').textContent = calcAcc(S.wordsCorrect, S.wordsCorrect + S.wordsErrors) + '%';
-        document.getElementById('w-combo').textContent = S.wordsCombo;
-        S.wordIdx++;
-        inp.value = '';
-        if (S.wordIdx >= S.wordsArr.length) {
-            clearInterval(S.wordsTimer);
-            const wpm = calcWPM(S.wordsCorrect, Date.now() - S.wordsStart);
-            const acc = calcAcc(S.wordsCorrect, S.wordsCorrect + S.wordsErrors);
-            S.completedLessons.add(S.currentLesson);
-            S.wpmHistory.push(wpm);
-            if (wpm > S.bestWPM) S.bestWPM = wpm;
-            S.xp += Math.round(wpm * (acc / 100) * 2);
-            document.getElementById('total-xp').textContent = S.xp;
-            showResult(wpm, acc, LESSONS[S.currentLesson].goal);
-            updateProgress();
-            return;
-        }
-        renderWords();
-    }
-}
-
-// PRACTICE
-let practiceText = '';
-function initPractice() { newPractice(); }
-function newPractice() {
-    const diff = document.getElementById('p-diff').value;
-    const wordCount = diff === 'easy' ? 12 : diff === 'medium' ? 18 : 24;
-    practiceText = generateRandomText(diff, wordCount);
-    S.practiceWords = practiceText.split(/\s+/);
-    S.practiceIdx = 0; S.practiceStart = null; S.practiceCombo = 0; S.practiceCorrect = 0;
-    renderPractice();
-    document.getElementById('practice-input').value = '';
-    document.getElementById('p-wpm').textContent = '0';
-    document.getElementById('p-acc').textContent = '100%';
-    document.getElementById('p-combo').textContent = '0';
-    document.getElementById('p-chars').textContent = '0';
-}
-
-function renderPractice() {
-    const c = document.getElementById('practice-display');
-    c.innerHTML = S.practiceWords.map((w, i) => {
-        if (i < S.practiceIdx) return `<span class="w-correct">${w}</span>`;
-        if (i === S.practiceIdx) return `<span class="w-cur">${w}</span>`;
-        return `<span>${w}</span>`;
-    }).join(' ');
-}
-
-function handlePracticeInput(inp) {
-    const v = inp.value;
-    if (!S.practiceStart && v.length > 0) S.practiceStart = Date.now();
-    if (v.endsWith(' ')) {
-        const typed = v.trim();
-        const target = S.practiceWords[S.practiceIdx];
-        if (typed === target) { S.practiceCorrect += typed.length + 1; S.practiceCombo++; }
-        else S.practiceCombo = 0;
-        document.getElementById('p-acc').textContent = calcAcc(S.practiceCorrect, S.practiceCorrect + (S.practiceIdx - S.practiceCorrect)) + '%';
-        document.getElementById('p-combo').textContent = S.practiceCombo;
-        document.getElementById('p-chars').textContent = S.practiceCorrect;
-        if (S.practiceStart) document.getElementById('p-wpm').textContent = calcWPM(S.practiceCorrect, Date.now() - S.practiceStart);
-        S.practiceIdx++; inp.value = '';
-        if (S.practiceIdx >= S.practiceWords.length) {
-            const wpm = calcWPM(S.practiceCorrect, Date.now() - S.practiceStart);
-            S.wpmHistory.push(wpm); if (wpm > S.bestWPM) S.bestWPM = wpm;
-            updateProgress();
-            setTimeout(newPractice, 600);
-        } else renderPractice();
-    }
-}
-
-// SPEED TEST
-function initTest() {
-    const generatedText = generateRandomText('medium', 160);
-    const words = generatedText.trim().split(/\s+/);
-    S.testWords = words.slice(0, 80);
-    renderTest();
-}
-
-function renderTest() {
-    const c = document.getElementById('test-display');
-    c.innerHTML = S.testWords.map((w, i) => {
-        if (i < S.testIdx) return `<span class="tc">${w}</span>`;
-        if (i === S.testIdx) return `<span class="tk">${w}</span>`;
-        return `<span>${w}</span>`;
-    }).join(' ');
-}
-
-function handleTestInput(inp) {
-    const v = inp.value;
-    if (!S.testStarted && v.trim().length > 0) {
-        S.testStarted = true;
-        const dur = parseInt(document.getElementById('test-dur').value);
-        S.testTimeLeft = dur;
-        S.testStart = Date.now();
-        S.testTimer = setInterval(() => {
-            S.testTimeLeft--;
-            document.getElementById('t-timer').textContent = S.testTimeLeft;
-            document.getElementById('t-wpm').textContent = calcWPM(S.testCorrect, Date.now() - S.testStart);
-            if (S.testTimeLeft <= 0) endTest();
-        }, 1000);
-    }
-    if (v.endsWith(' ')) {
-        const typed = v.trim();
-        const target = S.testWords[S.testIdx];
-        if (typed === target) S.testCorrect += typed.length + 1;
-        document.getElementById('t-acc').textContent = calcAcc(S.testCorrect, S.testCorrect + (S.testIdx + 1) * 4) + '%';
-        S.testIdx++; inp.value = ''; renderTest();
-    }
-}
-
-function endTest() {
-    clearInterval(S.testTimer);
-    const dur = parseInt(document.getElementById('test-dur').value);
-    const wpm = calcWPM(S.testCorrect, dur * 1000);
-    const acc = parseInt(document.getElementById('t-acc').textContent) || 100;
-    if (wpm > S.bestWPM) S.bestWPM = wpm;
-    S.wpmHistory.push(wpm); S.testCount++;
-    document.getElementById('t-best').textContent = S.bestWPM;
-    document.getElementById('test-input').disabled = true;
-    S.xp += Math.round(wpm * 3); document.getElementById('total-xp').textContent = S.xp;
-    showResult(wpm, acc, 50, 'test');
-    updateProgress();
-}
-
-function resetTest() {
-    clearInterval(S.testTimer);
-    S.testStarted = false; S.testCorrect = 0; S.testIdx = 0;
-    const dur = parseInt(document.getElementById('test-dur').value);
-    S.testTimeLeft = dur;
-    document.getElementById('t-timer').textContent = dur;
-    document.getElementById('t-wpm').textContent = '0';
-    document.getElementById('t-acc').textContent = '100%';
-    document.getElementById('test-input').value = '';
-    document.getElementById('test-input').disabled = false;
-    initTest();
-}
-
-// RESULT POPUP
-let resultMode = 'lesson';
-function showResult(wpm, acc, goal, mode = 'lesson') {
-    resultMode = mode;
-    const pct = wpm / goal;
-    const emoji = pct >= 1 ? '🎉' : pct >= .8 ? '👍' : '💪';
-    const title = pct >= 1 ? 'Excellent!' : pct >= .8 ? 'Well done!' : 'Keep going!';
-    document.getElementById('res-emoji').textContent = emoji;
-    document.getElementById('res-title').textContent = title;
-    document.getElementById('res-wpm').textContent = wpm;
-    document.getElementById('res-acc').textContent = acc + '%';
-    document.getElementById('res-goal').textContent = 'Goal: ' + goal;
-    document.getElementById('result-overlay').classList.add('show');
-}
-function closeResult() {
-    document.getElementById('result-overlay').classList.remove('show');
-}
-
-// PROGRESS PAGE
-function updateProgress() {
-    const bySkill = { home: 0, top: 0, bot: 0, num: 0 };
-    const maxSkill = { home: 4, top: 3, bot: 2, num: 1 };
-    S.completedLessons.forEach(i => { const s = LESSONS[i].skill; if (bySkill[s] !== undefined) bySkill[s]++; });
-    ['home', 'top', 'bot', 'num'].forEach(s => {
-        const pct = Math.min(100, Math.round((bySkill[s] / maxSkill[s]) * 100));
-        document.getElementById('sk-' + s).style.width = pct + '%';
-        document.getElementById('sk-' + s + '-v').textContent = pct + '%';
-    });
-    const spd = Math.min(100, Math.round((S.bestWPM / 80) * 100));
-    document.getElementById('sk-spd').style.width = spd + '%';
-    document.getElementById('sk-spd-v').textContent = spd + '%';
-    const avg = S.wpmHistory.length ? Math.round(S.wpmHistory.reduce((a, b) => a + b, 0) / S.wpmHistory.length) : 0;
-    document.getElementById('pr-best').textContent = S.bestWPM;
-    document.getElementById('pr-avg').textContent = avg;
-    document.getElementById('pr-done').textContent = S.completedLessons.size;
-    document.getElementById('pr-tests').textContent = S.testCount;
-    renderBadges(); renderChart();
-}
-
-function renderBadges() {
-    const BADGES = [
-        { l: 'First step', e: S.completedLessons.size >= 1 },
-        { l: 'Half way', e: S.completedLessons.size >= 5 },
-        { l: 'All lessons', e: S.completedLessons.size >= LESSONS.length },
-        { l: '30 WPM', e: S.bestWPM >= 30 },
-        { l: '50 WPM', e: S.bestWPM >= 50 },
-        { l: '70 WPM', e: S.bestWPM >= 70 },
-        { l: '5 tests', e: S.testCount >= 5 },
-        { l: 'Speed demon', e: S.bestWPM >= 90 },
-    ];
-    document.getElementById('badges').innerHTML = BADGES.map(b => `<div class="badge${b.e ? ' earned' : ''}">${b.e ? '✓ ' : ''}${b.l}</div>`).join('');
-}
-
-let _chart = null;
-function renderChart() {
-    const canvas = document.getElementById('wpm-chart');
-    if (!canvas || !window.Chart) return;
-    const data = S.wpmHistory.slice(-12);
-    if (_chart) _chart.destroy();
-    _chart = new Chart(canvas, {
-        type: 'line',
-        data: { labels: data.map((_, i) => `#${S.wpmHistory.length - data.length + i + 1}`), datasets: [{ label: 'WPM', data, borderColor: '#4db8ff', backgroundColor: 'rgba(77,184,255,0.07)', tension: .35, pointRadius: 4, pointBackgroundColor: '#4db8ff', fill: true }] },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#4a5568' } }, x: { grid: { display: false }, ticks: { color: '#4a5568' } } } }
-    });
-}
-
-// SCREEN SWITCHER
-function showScreen(name, btn) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('screen-' + name).classList.add('active');
-    if (btn) btn.classList.add('active');
-    if (name === 'fingers') initFingers();
-    if (name === 'practice') initPractice();
-    if (name === 'test') { initTest(); resetTest(); }
-    if (name === 'progress') updateProgress();
-    if (name === 'lessons') buildLessonGrid();
-}
-
-// HELPERS
-function calcWPM(chars, ms) { if (ms < 500) return 0; return Math.round((chars / 5) / (ms / 60000)); }
-function calcAcc(correct, total) { if (total === 0) return 100; return Math.round((correct / total) * 100); }
-
-// GLOBAL KEYDOWN for press feedback
-document.addEventListener('keydown', e => {
-    const active = document.activeElement;
-    if (active && active.id === 'words-input') pressKB('learn-kb', e.key.toLowerCase());
+DOM.modalNext.addEventListener('click', () => {
+    DOM.modalOverlay.classList.remove('open');
+    goNextLesson();
 });
 
-// FINGER PLACEMENT FEATURE
+DOM.modalOverlay.addEventListener('click', (e) => {
+    if (e.target === DOM.modalOverlay) DOM.modalOverlay.classList.remove('open');
+});
 
-// QWERTY finger map — data-finger attribute per key
-const FP_KEY_MAP = {
-    // Numbers row
-    '`': 'L-pinky', '1': 'L-pinky', '2': 'L-ring', '3': 'L-middle', '4': 'L-index', '5': 'L-index',
-    '6': 'R-index', '7': 'R-index', '8': 'R-middle', '9': 'R-ring', '0': 'R-pinky', '-': 'R-pinky', '=': 'R-pinky', '⌫': 'R-pinky',
-    // Top row
-    'Tab': 'L-pinky', 'q': 'L-pinky', 'w': 'L-ring', 'e': 'L-middle', 'r': 'L-index', 't': 'L-index',
-    'y': 'R-index', 'u': 'R-index', 'i': 'R-middle', 'o': 'R-ring', 'p': 'R-pinky', '[': 'R-pinky', ']': 'R-pinky', '\\': 'R-pinky',
-    // Home row
-    'Caps': 'L-pinky', 'a': 'L-pinky', 's': 'L-ring', 'd': 'L-middle', 'f': 'L-index', 'g': 'L-index',
-    'h': 'R-index', 'j': 'R-index', 'k': 'R-middle', 'l': 'R-ring', ';': 'R-pinky', "'": 'R-pinky', '↵': 'R-pinky',
-    // Bottom row
-    '⇧': 'L-pinky', 'z': 'L-pinky', 'x': 'L-ring', 'c': 'L-middle', 'v': 'L-index', 'b': 'L-index',
-    'n': 'R-index', 'm': 'R-index', ',': 'R-middle', '.': 'R-ring', '/': 'R-pinky',
-    // Space
-    'Space': 'thumb', 'Ctrl': 'L-pinky', 'Alt': 'thumb'
-};
+// ============================================
+// LESSON CONTROLS
+// ============================================
+DOM.restartBtn.addEventListener('click', restartLesson);
+DOM.nextBtn.addEventListener('click', goNextLesson);
+DOM.prevBtn.addEventListener('click', goPrevLesson);
 
-const HOME_KEYS = ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'];
-
-const FP_STEPS_DATA = [
-    {
-        id: 0, label: 'Overview',
-        finger: null, // show all
-        title: 'All fingers — At a glance',
-        desc: 'Every color represents a different finger. 🟢 Index fingers (F and J) — these are the home positions, recognize them by the bumps. 🔵 Middle fingers D and K. 🟣 Ring fingers S and L. 🩷 Pinky fingers A and ;. 🟡 Thumbs are only for the Space bar. The F and J keys have a raised line — this is your home position, keep your hands there without looking.',
-        stepColor: '#fbbf24'
-    },
-    {
-        id: 1, label: 'Pinky fingers',
-        finger: ['L-pinky', 'R-pinky'],
-        title: 'Pinky finger — Pink keys',
-        desc: 'Left pinky: A, Q, Z, Tab, Caps, Shift, 1, ` \nRight pinky: ;, P, /, Enter, Backspace, 0, -, =\n\nThe pinky is the weakest finger but very important. A and ; are your home positions. Don\'t stretch too far — move your hand a little toward the key.',
-        stepColor: '#ff6b9d',
-        drillKeys: ['a', 'a', 'a', ';', ';', ';', 'a', ';', 'a', ';']
-    },
-    {
-        id: 2, label: 'Ring fingers',
-        finger: ['L-ring', 'R-ring'],
-        title: 'Ring finger — Purple keys',
-        desc: 'Left ring: S, W, X, 2\nRight ring: L, O, ., 9\n\nS and L are the ring finger positions on the home row. These keys are one space ahead of A/;. Let the other fingers stay in place when the ring finger moves.',
-        stepColor: '#c084fc',
-        drillKeys: ['s', 's', 'l', 'l', 's', 'l', 's', 's', 'l', 's']
-    },
-    {
-        id: 3, label: 'Middle fingers',
-        finger: ['L-middle', 'R-middle'],
-        title: 'Middle finger — Blue keys',
-        desc: 'Left middle: D, E, C, 3\nRight middle: K, I, ,, 8\n\nD and K are the middle finger positions on the home row. The middle finger is naturally the longest, so reaching the top row is easier. C and , are on the bottom row.',
-        stepColor: '#60a5fa',
-        drillKeys: ['d', 'd', 'k', 'k', 'd', 'k', 'd', 'k', 'd', 'd']
-    },
-    {
-        id: 4, label: 'Index fingers',
-        finger: ['L-index', 'R-index'],
-        title: 'Index finger — Green keys',
-        desc: 'Left index: F, R, V, G, T, B, 4, 5\nRight index: J, U, M, H, Y, N, 6, 7\n\nIndex fingers cover the most keys! F and J are the home positions — feel them by the bumps. These fingers also handle the middle columns (G/H, T/Y, B/N).',
-        stepColor: '#34d399',
-        drillKeys: ['f', 'f', 'j', 'j', 'g', 'h', 'f', 'j', 'g', 'h']
-    },
-    {
-        id: 5, label: 'Thumbs',
-        finger: ['thumb'],
-        title: 'Thumbs — Space bar',
-        desc: 'Both thumbs are for the Space bar. Generally the right thumb is used more, but both can work.\n\nPress Space after every word — whenever you type any key with the left or right side, press Space with the thumb on that side. This creates rhythm.',
-        stepColor: '#fbbf24',
-        drillKeys: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-    },
-    {
-        id: 6, label: 'Practice drill',
-        finger: null,
-        title: 'Set your hands — Practice!',
-        desc: 'Now place your hands on ASDF JKL; — feel the bumps on F and J. Then press the highlighted key in the drill below. Do it without looking at the keyboard!',
-        stepColor: 'var(--accent)',
-        drillKeys: ['f', 'j', 'd', 'k', 's', 'l', 'a', ';', 'f', 'j', 'g', 'h', 'd', 'k', 's', 'l', 'a', ';', ' ', 'f']
-    }
-];
-
-let fpState = { step: 0, drillIdx: 0, drillTotal: 0, drillCorrect: 0, showAll: false };
-
-function fpBuildKeyboard() {
-    const KB = [
-        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '⌫'],
-        ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
-        ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", '↵'],
-        ['⇧', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', '⇧'],
-        ['Ctrl', 'Alt', 'Space', 'Alt', 'Ctrl']
-    ];
-    const WIDE_FP = ['⌫', 'Tab', 'Caps', '↵'];
-    const WIDER_FP = ['⇧'];
-    const SPACE_FP = ['Space'];
-
-    const wrap = document.getElementById('fp-keyboard');
-    if (!wrap) return;
-    wrap.innerHTML = '';
-    const kb = document.createElement('div');
-    kb.id = 'fp-kb-inner';
-    KB.forEach(row => {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'kb-row';
-        rowDiv.style.cssText = 'display:flex;flex-wrap:nowrap;justify-content:center;gap:4px;margin-bottom:4px';
-        row.forEach(k => {
-            const el = document.createElement('div');
-            el.className = 'fp-key';
-            if (WIDE_FP.includes(k)) el.classList.add('wide');
-            if (WIDER_FP.includes(k)) el.classList.add('wider');
-            if (SPACE_FP.includes(k)) el.classList.add('space-key');
-            const finger = FP_KEY_MAP[k] || FP_KEY_MAP[k.toLowerCase()];
-            if (finger) el.dataset.finger = finger;
-            el.textContent = k;
-            if (HOME_KEYS.includes(k.toLowerCase())) el.classList.add('home-dot');
-            rowDiv.appendChild(el);
-        });
-        kb.appendChild(rowDiv);
-    });
-    wrap.appendChild(kb);
+function restartLesson() {
+    generateTypingText(state.currentLesson);
+    resetTypingState();
+    buildKeyboard();
+    renderHands(null);
+    setTimeout(() => { DOM.hiddenInput.focus(); }, 100);
 }
 
-function fpSetStep(stepIdx) {
-    fpState.step = stepIdx;
-    // Update step buttons
-    document.querySelectorAll('.fp-step').forEach((b, i) => {
-        b.classList.toggle('active', i === stepIdx);
-        const s = FP_STEPS_DATA[i];
-        if (i === stepIdx) b.style.background = s.stepColor;
-        else b.style.background = '';
-    });
-
-    const s = FP_STEPS_DATA[stepIdx];
-
-    // Update keyboard highlight
-    document.querySelectorAll('[data-finger]').forEach(el => {
-        el.classList.remove('highlight', 'show-all');
-        if (s.finger === null && stepIdx === 0) {
-            el.classList.add('show-all');
-        } else if (s.finger && s.finger.includes(el.dataset.finger)) {
-            el.classList.add('highlight');
-        }
-    });
-
-    // Update info
-    document.getElementById('fp-info-title').textContent = s.title;
-    document.getElementById('fp-info-desc').style.whiteSpace = 'pre-line';
-    document.getElementById('fp-info-desc').textContent = s.desc;
-
-    // Drill vs info
-    const drillArea = document.getElementById('fp-drill-area');
-    if (stepIdx === 6) {
-        drillArea.style.display = 'block';
-        fpStartDrill(s.drillKeys);
-    } else {
-        drillArea.style.display = 'none';
-    }
-
-    // Prev/next buttons
-    document.getElementById('fp-prev-btn').style.opacity = stepIdx === 0 ? '0.3' : '1';
-    document.getElementById('fp-next-btn').textContent = stepIdx === 6 ? '↺ Restart' : 'Next →';
+function goNextLesson() {
+    const next = state.currentLessonIdx + 1;
+    if (next < LESSONS.length) launchLesson(next);
 }
 
-function fpPrev() { if (fpState.step > 0) fpSetStep(fpState.step - 1); }
-function fpNext() {
-    if (fpState.step < 6) fpSetStep(fpState.step + 1);
-    else fpSetStep(0);
+function goPrevLesson() {
+    const prev = state.currentLessonIdx - 1;
+    if (prev >= 0) launchLesson(prev);
 }
 
-function fpClickLegend(f1, f2) {
-    document.querySelectorAll('[data-finger]').forEach(el => {
-        el.classList.remove('highlight', 'show-all');
-        if (el.dataset.finger === f1 || (f2 && el.dataset.finger === f2)) {
-            el.classList.add('highlight');
-        }
+// ============================================
+// LANG SELECTOR
+// ============================================
+DOM.langItems.forEach(item => {
+    item.addEventListener('click', () => {
+        if (item.classList.contains('disabled')) return;
+        DOM.langItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        // Future: swap lesson set per language
     });
-    document.querySelectorAll('.fp-leg-item').forEach(item => item.classList.remove('active-leg'));
-}
+});
 
-function fpStartDrill(keys) {
-    fpState.drillIdx = 0;
-    fpState.drillTotal = keys.length;
-    fpState.drillCorrect = 0;
-    const c = document.getElementById('fp-drill-keys');
-    c.innerHTML = '';
-    keys.forEach((k, i) => {
-        const el = document.createElement('div');
-        el.className = 'fp-drill-key';
-        el.dataset.f = FP_KEY_MAP[k] || FP_KEY_MAP[k.toLowerCase()] || 'thumb';
-        el.textContent = k === ' ' ? '␣' : k.toUpperCase();
-        if (i === 0) el.classList.add('current');
-        c.appendChild(el);
+// ============================================
+// SETTINGS
+// ============================================
+DOM.toggleKeyboard.addEventListener('change', () => {
+    state.showKeyboard = DOM.toggleKeyboard.checked;
+    DOM.keyboard.closest('.keyboard-container').style.display = state.showKeyboard ? '' : 'none';
+});
+
+DOM.toggleHands.addEventListener('change', () => {
+    state.showHands = DOM.toggleHands.checked;
+    renderHands(state.typingText[state.cursorIdx]?.toLowerCase() || null);
+});
+
+DOM.toggleColors.addEventListener('change', () => {
+    state.colorFingers = DOM.toggleColors.checked;
+    buildKeyboard();
+});
+
+DOM.toggleSound.addEventListener('change', () => {
+    state.soundEnabled = DOM.toggleSound.checked;
+});
+
+document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     });
-    fpUpdateDrillMsg(keys[0]);
-    document.getElementById('fp-drill-prog').style.width = '0%';
-    document.getElementById('fp-drill-input').value = '';
-    document.getElementById('fp-drill-input').focus();
+});
 
-    // Highlight keyboard
-    const f = FP_KEY_MAP[keys[0]] || FP_KEY_MAP[keys[0].toLowerCase()] || 'thumb';
-    fpHighlightDrillKey(keys[0]);
-}
-
-function fpHighlightDrillKey(k) {
-    document.querySelectorAll('[data-finger]').forEach(el => {
-        el.classList.remove('highlight', 'show-all');
-    });
-    const kl = k.toLowerCase();
-    document.querySelectorAll('[data-finger]').forEach(el => {
-        if (el.textContent.toLowerCase() === kl || (k === ' ' && el.textContent === 'Space')) {
-            el.classList.add('highlight');
-        }
-    });
-}
-
-function fpUpdateDrillMsg(k) {
-    const f = FP_KEY_MAP[k] || FP_KEY_MAP[(k || '').toLowerCase()] || 'thumb';
-    const fNames = { 'L-pinky': 'left pinky', 'L-ring': 'left ring', 'L-middle': 'left middle', 'L-index': 'left index', 'R-pinky': 'right pinky', 'R-ring': 'right ring', 'R-middle': 'right middle', 'R-index': 'right index', 'thumb': 'thumb' };
-    const key = k === ' ' ? 'Space' : k.toUpperCase();
-    document.getElementById('fp-drill-msg').textContent = `Press "${key}" using your ${fNames[f] || f} finger`;
-}
-
-document.addEventListener('keydown', e => {
-    if (document.activeElement.id === 'fp-drill-input') {
-        e.preventDefault();
-        const drillKeysEl = document.querySelectorAll('.fp-drill-key');
-        const s = FP_STEPS_DATA[6];
-        const allKeys = s.drillKeys;
-        if (fpState.drillIdx >= allKeys.length) return;
-
-        const expected = allKeys[fpState.drillIdx];
-        const pressed = e.key;
-        const correct = (pressed === expected) || (expected === ' ' && pressed === ' ') || (pressed.toLowerCase() === expected.toLowerCase());
-
-        const curEl = drillKeysEl[fpState.drillIdx];
-        if (correct) {
-            curEl.classList.remove('current');
-            curEl.classList.add('done');
-            fpState.drillCorrect++;
-            fpState.drillIdx++;
-            const pct = Math.round((fpState.drillIdx / fpState.drillTotal) * 100);
-            document.getElementById('fp-drill-prog').style.width = pct + '%';
-            if (fpState.drillIdx >= fpState.drillTotal) {
-                document.getElementById('fp-drill-msg').textContent = `✓ All correct! ${fpState.drillCorrect}/${fpState.drillTotal} correct. Try again!`;
-                fpHighlightDrillKey('');
-                setTimeout(() => fpStartDrill(allKeys), 1200);
-                return;
-            }
-            const next = allKeys[fpState.drillIdx];
-            drillKeysEl[fpState.drillIdx].classList.add('current');
-            fpUpdateDrillMsg(next);
-            fpHighlightDrillKey(next);
-        } else {
-            curEl.classList.add('wrong-flash');
-            setTimeout(() => curEl.classList.remove('wrong-flash'), 220);
+// ============================================
+// KEYBOARD SHORTCUT HINT
+// ============================================
+document.addEventListener('keydown', (e) => {
+    if (state.currentView === 'typing') {
+        // Allow Tab as shortcut for restart
+        if (e.key === 'Tab' && e.shiftKey) {
+            e.preventDefault();
+            restartLesson();
         }
     }
 });
 
-function initFingers() {
-    fpBuildKeyboard();
-    fpSetStep(0);
+// ============================================
+// INIT
+// ============================================
+function init() {
+    buildLessonGrid();
+    buildKeyboard();
+    showView('learn');
+
+    // Stagger card animation delays
+    document.querySelectorAll('.lesson-card').forEach((card, i) => {
+        card.style.animationDelay = `${i * 0.025}s`;
+    });
 }
 
-// INIT 
-buildLessonGrid();
+init();
