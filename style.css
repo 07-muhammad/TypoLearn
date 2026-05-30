@@ -132,6 +132,12 @@ a { text-decoration: none; }
 
 .nav-right { display: flex; align-items: center; }
 
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .streak-badge {
   padding: 4px 12px;
   background: rgba(245,166,35,0.12);
@@ -167,8 +173,10 @@ a { text-decoration: none; }
   height: calc(100vh - var(--nav-h));
   position: sticky;
   top: var(--nav-h);
-  transition: width 0.3s ease, min-width 0.3s ease, opacity 0.3s ease, padding 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.04s, opacity 0.28s ease 0.04s, border-color 0.28s ease, padding 0.28s ease;
   overflow: hidden;
+  transform: translateX(0);
+  will-change: transform, opacity;
 }
 
 .sidebar.closed {
@@ -177,6 +185,8 @@ a { text-decoration: none; }
   padding: 0;
   border-right: none;
   opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
 }
 
 .sidebar.closed .sidebar-section {
@@ -186,10 +196,10 @@ a { text-decoration: none; }
 }
 
 .sidebar-toggle-btn {
-  position: fixed;
-  top: 14px;
-  left: 14px;
-  z-index: 400;
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: auto;
   width: 42px;
   height: 42px;
   border-radius: 12px;
@@ -201,7 +211,9 @@ a { text-decoration: none; }
   justify-content: center;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transition: background 1.5s ease, border-color 1.5s ease, transform 1.5s ease;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .sidebar-toggle-btn:hover {
@@ -984,15 +996,7 @@ a { text-decoration: none; }
     min-width: var(--sidebar-w);
     height: calc(100vh - var(--nav-h));
     transform: translateX(-100%);
-    transition: transform 0.25s ease, opacity 0.25s ease;
-    z-index: 220;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-    opacity: 1;
-  }
-
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.04s, opacity 0.28s ease 0.04s;
   .sidebar.closed {
     transform: translateX(-100%);
     opacity: 0;
@@ -1005,4 +1009,5 @@ a { text-decoration: none; }
   .learn-inner { padding: 1.25rem; }
   .typing-screen { padding: 1rem; }
   .lessons-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
 }
